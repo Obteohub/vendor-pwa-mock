@@ -1,0 +1,4268 @@
+[
+  {
+    "id": 11686,
+    "name": "Canon Cameras",
+    "slug": "canon-cameras",
+    "parent": 11570
+  },
+  {
+    "id": 10668,
+    "name": "Sony Headphones",
+    "slug": "sony-headphones",
+    "parent": 177
+  },
+  {
+    "id": 15,
+    "name": "Uncategorized",
+    "slug": "uncategorized",
+    "parent": 0
+  },
+  {
+    "id": 2417,
+    "name": "Accessories",
+    "slug": "accessories",
+    "parent": 126
+  },
+  {
+    "id": 10486,
+    "name": "Acer Chromebooks",
+    "slug": "acer-chromebooks",
+    "parent": 10482
+  },
+  {
+    "id": 11583,
+    "name": "Acne and Blemish Control",
+    "slug": "acne-and-blemish-control",
+    "parent": 55
+  },
+  {
+    "id": 210,
+    "name": "Air Conditioners",
+    "slug": "air-conditioners",
+    "parent": 209
+  },
+  {
+    "id": 10757,
+    "name": "Air coolers",
+    "slug": "air-coolers",
+    "parent": 209
+  },
+  {
+    "id": 11438,
+    "name": "Air Fryer",
+    "slug": "air-fryer",
+    "parent": 202
+  },
+  {
+    "id": 157,
+    "name": "Air Purifiers",
+    "slug": "air-purifiers",
+    "parent": 209
+  },
+  {
+    "id": 149,
+    "name": "Air Refreshners",
+    "slug": "air-refreshners",
+    "parent": 83
+  },
+  {
+    "id": 10661,
+    "name": "Airpods",
+    "slug": "apple-airpods",
+    "parent": 10488
+  },
+  {
+    "id": 11847,
+    "name": "Akai Home Theatres",
+    "slug": "akai-home-theatres",
+    "parent": 176
+  },
+  {
+    "id": 95,
+    "name": "Alcoholic Beverages",
+    "slug": "alcoholic-beverages",
+    "parent": 93
+  },
+  {
+    "id": 10795,
+    "name": "Altec Bluetooth Speakers",
+    "slug": "altec-bluetooth-speakers",
+    "parent": 121
+  },
+  {
+    "id": 205,
+    "name": "Android Phones",
+    "slug": "android-phones",
+    "parent": 10442
+  },
+  {
+    "id": 43322,
+    "name": "Android Tablets",
+    "slug": "android-tablets",
+    "parent": 10452
+  },
+  {
+    "id": 11566,
+    "name": "Android TVs",
+    "slug": "android-tvs",
+    "parent": 10754
+  },
+  {
+    "id": 10790,
+    "name": "Anker Bluetooth Speakers",
+    "slug": "anker-bluetooth-speakers",
+    "parent": 121
+  },
+  {
+    "id": 11755,
+    "name": "Anker Eabuds",
+    "slug": "anker-eabuds",
+    "parent": 10488
+  },
+  {
+    "id": 11012,
+    "name": "Apple Accessories",
+    "slug": "apple-accessories",
+    "parent": 128
+  },
+  {
+    "id": 10791,
+    "name": "Apple Bluetooth Speakers",
+    "slug": "apple-bluetooth-speakers",
+    "parent": 121
+  },
+  {
+    "id": 11010,
+    "name": "Apple iMac",
+    "slug": "apple-imac",
+    "parent": 10681
+  },
+  {
+    "id": 11091,
+    "name": "Apple iPhone 15, iPhone 15 Plus, iPhone 15 Pro and iPhone 15 Pro Max",
+    "slug": "apple-iphone-15-iphone-15-plus-iphone-15-pro-and-iphone-15-pro-max",
+    "parent": 10447
+  },
+  {
+    "id": 10493,
+    "name": "Apple MacBook Laptops",
+    "slug": "apple-macbook-laptops",
+    "parent": 10481
+  },
+  {
+    "id": 11009,
+    "name": "Apple TV",
+    "slug": "apple-tv",
+    "parent": 10754
+  },
+  {
+    "id": 11011,
+    "name": "Apple Watch",
+    "slug": "apple-watch",
+    "parent": 10576
+  },
+  {
+    "id": 11752,
+    "name": "Arts &amp; Entertainment",
+    "slug": "arts-entertainment",
+    "parent": 0
+  },
+  {
+    "id": 11850,
+    "name": "Asano Home Theatres",
+    "slug": "asano-home-theatres",
+    "parent": 176
+  },
+  {
+    "id": 10487,
+    "name": "Audio",
+    "slug": "audio",
+    "parent": 126
+  },
+  {
+    "id": 10787,
+    "name": "Audio Accessories",
+    "slug": "audio-accessories",
+    "parent": 10487
+  },
+  {
+    "id": 11520,
+    "name": "Audio Cable &amp; Adaptors",
+    "slug": "audio-cable-adaptors",
+    "parent": 10787
+  },
+  {
+    "id": 11523,
+    "name": "AUX Cables",
+    "slug": "aux-cables",
+    "parent": 11520
+  },
+  {
+    "id": 170,
+    "name": "Baby, Kids &amp; Toys",
+    "slug": "baby-product",
+    "parent": 0
+  },
+  {
+    "id": 107,
+    "name": "Backpacks",
+    "slug": "backpacks",
+    "parent": 459
+  },
+  {
+    "id": 31,
+    "name": "Bags and Luggages",
+    "slug": "bags-and-luggages",
+    "parent": 10380
+  },
+  {
+    "id": 10450,
+    "name": "Basic Phones",
+    "slug": "basic-phones",
+    "parent": 1869
+  },
+  {
+    "id": 1083,
+    "name": "Basketball Shoes",
+    "slug": "basketball-shoes",
+    "parent": 27
+  },
+  {
+    "id": 11578,
+    "name": "Bath &amp; Body Care",
+    "slug": "bath-body-care",
+    "parent": 52
+  },
+  {
+    "id": 10842,
+    "name": "Bathroom Cleaners",
+    "slug": "bathroom-cleaners",
+    "parent": 117
+  },
+  {
+    "id": 175,
+    "name": "Battery",
+    "slug": "battery",
+    "parent": 1870
+  },
+  {
+    "id": 10789,
+    "name": "Beats Bluetooth Speakers",
+    "slug": "beats-bluetooth-speakers",
+    "parent": 121
+  },
+  {
+    "id": 10800,
+    "name": "Beats Earbuds",
+    "slug": "beats-earbuds",
+    "parent": 10488
+  },
+  {
+    "id": 10664,
+    "name": "Beats Headphones",
+    "slug": "beats-headphones",
+    "parent": 177
+  },
+  {
+    "id": 53,
+    "name": "Beauty and Personal Care",
+    "slug": "beauty-and-personal-care",
+    "parent": 52
+  },
+  {
+    "id": 38,
+    "name": "Belts",
+    "slug": "mens-belts",
+    "parent": 24
+  },
+  {
+    "id": 10680,
+    "name": "Belts",
+    "slug": "belts",
+    "parent": 24
+  },
+  {
+    "id": 93,
+    "name": "Beverages",
+    "slug": "beverages",
+    "parent": 10848
+  },
+  {
+    "id": 11439,
+    "name": "Binatone Blenders",
+    "slug": "binatone-blenders",
+    "parent": 68
+  },
+  {
+    "id": 10718,
+    "name": "Binatone Ceiling Fan",
+    "slug": "binatone-ceiling-fan",
+    "parent": 85
+  },
+  {
+    "id": 10723,
+    "name": "Binatone Freezers",
+    "slug": "binatone-freezers",
+    "parent": 10649
+  },
+  {
+    "id": 10722,
+    "name": "Binatone Fridges",
+    "slug": "binatone-fridges",
+    "parent": 10649
+  },
+  {
+    "id": 10719,
+    "name": "Binatone Gas Cookers",
+    "slug": "binatone-gas-cookers",
+    "parent": 139
+  },
+  {
+    "id": 10715,
+    "name": "Binatone Irons",
+    "slug": "binatone-irons",
+    "parent": 138
+  },
+  {
+    "id": 10717,
+    "name": "Binatone Kettles",
+    "slug": "binatone-kettles",
+    "parent": 85
+  },
+  {
+    "id": 10721,
+    "name": "Binatone Microwave Ovens",
+    "slug": "binatone-microwave-ovens",
+    "parent": 10650
+  },
+  {
+    "id": 10714,
+    "name": "Binatone Rice Cookers",
+    "slug": "binatone-rice-cookers",
+    "parent": 84
+  },
+  {
+    "id": 10716,
+    "name": "Binatone Standing Fans",
+    "slug": "binatone-standing-fans",
+    "parent": 10647
+  },
+  {
+    "id": 10720,
+    "name": "Binatone Wall Fans",
+    "slug": "binatone-wall-fans",
+    "parent": 158
+  },
+  {
+    "id": 68,
+    "name": "Blenders",
+    "slug": "blenders",
+    "parent": 202
+  },
+  {
+    "id": 808,
+    "name": "Block Heels",
+    "slug": "block-heels",
+    "parent": 275
+  },
+  {
+    "id": 11526,
+    "name": "Bluetooth Audio Transmitters and Receivers",
+    "slug": "bluetooth-audio-transmitters-and-receivers",
+    "parent": 11520
+  },
+  {
+    "id": 121,
+    "name": "Bluetooth Speakers",
+    "slug": "bluetooth-speakers",
+    "parent": 122
+  },
+  {
+    "id": 233,
+    "name": "Boat Shoes",
+    "slug": "boat-shoes",
+    "parent": 29
+  },
+  {
+    "id": 56,
+    "name": "Body lotion",
+    "slug": "body-lotion",
+    "parent": 53
+  },
+  {
+    "id": 11585,
+    "name": "Body Lotion and Creams",
+    "slug": "body-lotion-and-creams",
+    "parent": 55
+  },
+  {
+    "id": 11598,
+    "name": "Body scrubs and Exfoliators",
+    "slug": "body-scrubs-and-exfoliators",
+    "parent": 11578
+  },
+  {
+    "id": 145,
+    "name": "Body Wash",
+    "slug": "body-wash",
+    "parent": 53
+  },
+  {
+    "id": 11596,
+    "name": "Body Washes &amp; Soaps",
+    "slug": "body-washes-soaps",
+    "parent": 11578
+  },
+  {
+    "id": 1061,
+    "name": "Boho Sandals",
+    "slug": "boho-sandals",
+    "parent": 196
+  },
+  {
+    "id": 11556,
+    "name": "Boom Arms &amp; Stands",
+    "slug": "boom-arms-stands",
+    "parent": 11539
+  },
+  {
+    "id": 10788,
+    "name": "Bose Bluetooth Speakers",
+    "slug": "bose-bluetooth-speakers",
+    "parent": 121
+  },
+  {
+    "id": 10799,
+    "name": "Bose Earbuds",
+    "slug": "bose-earbuds",
+    "parent": 10488
+  },
+  {
+    "id": 10805,
+    "name": "Bose Headphones",
+    "slug": "bose-headphones",
+    "parent": 177
+  },
+  {
+    "id": 11845,
+    "name": "Bose Home Theatres",
+    "slug": "bose-home-theatres",
+    "parent": 176
+  },
+  {
+    "id": 212,
+    "name": "Bow Ties",
+    "slug": "bow-ties",
+    "parent": 24
+  },
+  {
+    "id": 218,
+    "name": "Boxers",
+    "slug": "boxers",
+    "parent": 50
+  },
+  {
+    "id": 10648,
+    "name": "Brazil National Team Jersey",
+    "slug": "brazil-national-team-jersey",
+    "parent": 10524
+  },
+  {
+    "id": 186,
+    "name": "Briefcase",
+    "slug": "briefcase",
+    "parent": 31
+  },
+  {
+    "id": 91,
+    "name": "Brogue Shoes",
+    "slug": "brogue-shoes",
+    "parent": 1916
+  },
+  {
+    "id": 2201,
+    "name": "btm",
+    "slug": "btm",
+    "parent": 0
+  },
+  {
+    "id": 193,
+    "name": "Calculators",
+    "slug": "calculators",
+    "parent": 191
+  },
+  {
+    "id": 10906,
+    "name": "Calvin Klein Perfumes",
+    "slug": "calvin-klein-perfumes",
+    "parent": 146
+  },
+  {
+    "id": 11571,
+    "name": "Camera Accessories",
+    "slug": "camera-accessories",
+    "parent": 11569
+  },
+  {
+    "id": 11570,
+    "name": "Cameras",
+    "slug": "cameras",
+    "parent": 11569
+  },
+  {
+    "id": 11569,
+    "name": "Cameras, Videography and Surveillance",
+    "slug": "cameras-videography-and-surveillance",
+    "parent": 126
+  },
+  {
+    "id": 97,
+    "name": "Candy and Chocolates",
+    "slug": "candy-and-chocolates",
+    "parent": 10849
+  },
+  {
+    "id": 1086,
+    "name": "Canvas Sneakers",
+    "slug": "canvas-sneakers",
+    "parent": 27
+  },
+  {
+    "id": 62,
+    "name": "Caps",
+    "slug": "caps",
+    "parent": 24
+  },
+  {
+    "id": 2418,
+    "name": "Caps",
+    "slug": "caps-accessories",
+    "parent": 24
+  },
+  {
+    "id": 165,
+    "name": "car accessories",
+    "slug": "car-accessories",
+    "parent": 10850
+  },
+  {
+    "id": 2113,
+    "name": "Car Travel Accessories",
+    "slug": "car-travel-accessories",
+    "parent": 165
+  },
+  {
+    "id": 75,
+    "name": "Cardigans &amp; Jumpers",
+    "slug": "cardigans-jumpers",
+    "parent": 10380
+  },
+  {
+    "id": 10438,
+    "name": "Carry Ons",
+    "slug": "carry-ons",
+    "parent": 31
+  },
+  {
+    "id": 137,
+    "name": "Casual Shirts",
+    "slug": "casual-shirts",
+    "parent": 2264
+  },
+  {
+    "id": 171,
+    "name": "casual Shoes",
+    "slug": "casual",
+    "parent": 10380
+  },
+  {
+    "id": 10644,
+    "name": "Ceiling Fans",
+    "slug": "ceiling-fans",
+    "parent": 154
+  },
+  {
+    "id": 125,
+    "name": "Chargers and Adaptors",
+    "slug": "chargers-and-adaptors",
+    "parent": 1870
+  },
+  {
+    "id": 10687,
+    "name": "Charging Docks &amp; Stands",
+    "slug": "charging-docks-stands",
+    "parent": 169
+  },
+  {
+    "id": 10811,
+    "name": "Chelsea Boots",
+    "slug": "chelsea-boots",
+    "parent": 10380
+  },
+  {
+    "id": 10855,
+    "name": "Chest Freezers",
+    "slug": "chest-freezers",
+    "parent": 10649
+  },
+  {
+    "id": 11551,
+    "name": "Choi &amp; Instrument Microphones",
+    "slug": "choi-instrument-microphones",
+    "parent": 11538
+  },
+  {
+    "id": 10482,
+    "name": "Chromebooks",
+    "slug": "chromebooks",
+    "parent": 10681
+  },
+  {
+    "id": 227,
+    "name": "Chukka Boots",
+    "slug": "chukka-boots",
+    "parent": 25
+  },
+  {
+    "id": 1063,
+    "name": "Chunky Sandals",
+    "slug": "chunky-sandals",
+    "parent": 196
+  },
+  {
+    "id": 10682,
+    "name": "Club Team Jerseys",
+    "slug": "club-team-jerseys",
+    "parent": 180
+  },
+  {
+    "id": 184,
+    "name": "Clutch",
+    "slug": "clutch",
+    "parent": 32
+  },
+  {
+    "id": 76,
+    "name": "Coats &amp; Jackets",
+    "slug": "coats-jackets",
+    "parent": 10678
+  },
+  {
+    "id": 11512,
+    "name": "Coffee Makers",
+    "slug": "coffee-makers",
+    "parent": 11452
+  },
+  {
+    "id": 11754,
+    "name": "Collectibles",
+    "slug": "collectibles",
+    "parent": 11753
+  },
+  {
+    "id": 11568,
+    "name": "Commercial TVs",
+    "slug": "commercial-tvs",
+    "parent": 10754
+  },
+  {
+    "id": 128,
+    "name": "Computer Accessories",
+    "slug": "computer-accessories",
+    "parent": 126
+  },
+  {
+    "id": 190,
+    "name": "Computer cable adaptors",
+    "slug": "computer-cable-adaptors",
+    "parent": 128
+  },
+  {
+    "id": 11516,
+    "name": "Computer Components",
+    "slug": "computer-components",
+    "parent": 126
+  },
+  {
+    "id": 10681,
+    "name": "Computers",
+    "slug": "computers",
+    "parent": 126
+  },
+  {
+    "id": 11547,
+    "name": "Condenser Microphones",
+    "slug": "condenser-microphones",
+    "parent": 11537
+  },
+  {
+    "id": 10697,
+    "name": "Controllers and Gamepads",
+    "slug": "controllers-and-gamepads",
+    "parent": 169
+  },
+  {
+    "id": 2090,
+    "name": "Cookies, Biscuits &amp; Snacks",
+    "slug": "cookies-biscuits-snacks",
+    "parent": 45
+  },
+  {
+    "id": 10633,
+    "name": "Cooking Appliances",
+    "slug": "cooking-appliances",
+    "parent": 202
+  },
+  {
+    "id": 209,
+    "name": "Cooling, Heating and Air Quality",
+    "slug": "cooling-heating-and-air-quality",
+    "parent": 202
+  },
+  {
+    "id": 10572,
+    "name": "Core &amp; Abdominal Trainer",
+    "slug": "core-abdominal-trainer",
+    "parent": 10571
+  },
+  {
+    "id": 10869,
+    "name": "Countertop Blenders",
+    "slug": "countertop-blenders",
+    "parent": 68
+  },
+  {
+    "id": 10514,
+    "name": "Country Flags",
+    "slug": "country-flags",
+    "parent": 11754
+  },
+  {
+    "id": 1075,
+    "name": "Cow Boy Sandals",
+    "slug": "cow-boy-sandals",
+    "parent": 196
+  },
+  {
+    "id": 1073,
+    "name": "Crochet Sandals",
+    "slug": "crochet-sandals",
+    "parent": 196
+  },
+  {
+    "id": 185,
+    "name": "Crossbody Bag",
+    "slug": "crossbody-bag",
+    "parent": 31
+  },
+  {
+    "id": 1080,
+    "name": "Cutout Pastel Sandals",
+    "slug": "cutout-pastel-sandals",
+    "parent": 196
+  },
+  {
+    "id": 1077,
+    "name": "Dad Sandals",
+    "slug": "dad-sandals",
+    "parent": 196
+  },
+  {
+    "id": 1875,
+    "name": "Data Storage Device",
+    "slug": "data-storage-devices",
+    "parent": 128
+  },
+  {
+    "id": 11021,
+    "name": "Deep Freezer",
+    "slug": "deep-freezer",
+    "parent": 10649
+  },
+  {
+    "id": 10898,
+    "name": "Deep Fryers",
+    "slug": "deep-fryers",
+    "parent": 202
+  },
+  {
+    "id": 10921,
+    "name": "Dell Alienware Laptops",
+    "slug": "dell-alienware-laptops",
+    "parent": 10481
+  },
+  {
+    "id": 10905,
+    "name": "Dell Laptops",
+    "slug": "dell-laptops",
+    "parent": 10481
+  },
+  {
+    "id": 10734,
+    "name": "Delron Ceiling Fans",
+    "slug": "delron-ceiling-fans",
+    "parent": 10644
+  },
+  {
+    "id": 11491,
+    "name": "delron chest freezers",
+    "slug": "delron-chest-freezers",
+    "parent": 10855
+  },
+  {
+    "id": 10736,
+    "name": "Delron Fridges",
+    "slug": "delron-fridges",
+    "parent": 10647
+  },
+  {
+    "id": 10666,
+    "name": "Delron Household Fans",
+    "slug": "delron-household-fans",
+    "parent": 154
+  },
+  {
+    "id": 10665,
+    "name": "Delron Microwave Oven",
+    "slug": "delron-microwave-oven",
+    "parent": 10650
+  },
+  {
+    "id": 10735,
+    "name": "Delron Standing Fans",
+    "slug": "delron-standing-fans",
+    "parent": 10647
+  },
+  {
+    "id": 43346,
+    "name": "Deodorants",
+    "slug": "deodorants",
+    "parent": 11597
+  },
+  {
+    "id": 11597,
+    "name": "Deodorants &amp; Antiperspirants",
+    "slug": "deodorants-antiperspirants",
+    "parent": 11578
+  },
+  {
+    "id": 89,
+    "name": "Derby Shoes",
+    "slug": "derby-shoes",
+    "parent": 1916
+  },
+  {
+    "id": 223,
+    "name": "Desert Boots",
+    "slug": "desert-boots-men",
+    "parent": 25
+  },
+  {
+    "id": 11515,
+    "name": "Desktop Computers",
+    "slug": "desktop-computers",
+    "parent": 10681
+  },
+  {
+    "id": 2176,
+    "name": "Diapers",
+    "slug": "diapers",
+    "parent": 2175
+  },
+  {
+    "id": 10966,
+    "name": "Dress Boots",
+    "slug": "dress-boots",
+    "parent": 25
+  },
+  {
+    "id": 131,
+    "name": "Dress Shirts",
+    "slug": "dress-shirts",
+    "parent": 2264
+  },
+  {
+    "id": 77,
+    "name": "Dresses",
+    "slug": "dresses",
+    "parent": 459
+  },
+  {
+    "id": 232,
+    "name": "Driving Loafer",
+    "slug": "driving-loafer",
+    "parent": 47
+  },
+  {
+    "id": 11572,
+    "name": "Drones &amp; Accessories",
+    "slug": "drones-accessories",
+    "parent": 11569
+  },
+  {
+    "id": 11550,
+    "name": "Drum Microphones",
+    "slug": "drum-microphones",
+    "parent": 11538
+  },
+  {
+    "id": 109,
+    "name": "Duffles",
+    "slug": "duffles",
+    "parent": 31
+  },
+  {
+    "id": 11548,
+    "name": "Dynamic Microphones",
+    "slug": "dynamic-microphones",
+    "parent": 11537
+  },
+  {
+    "id": 11531,
+    "name": "Earbud Cases",
+    "slug": "earbud-cases",
+    "parent": 11530
+  },
+  {
+    "id": 10488,
+    "name": "Earbuds",
+    "slug": "earbuds",
+    "parent": 10487
+  },
+  {
+    "id": 10585,
+    "name": "Earphones",
+    "slug": "earphones",
+    "parent": 10487
+  },
+  {
+    "id": 43323,
+    "name": "Electricals &amp; Power",
+    "slug": "electricals-power",
+    "parent": 126
+  },
+  {
+    "id": 126,
+    "name": "Electronics &amp; Gadgets",
+    "slug": "electronics",
+    "parent": 0
+  },
+  {
+    "id": 10850,
+    "name": "Electronics Accessories",
+    "slug": "electronics-accessories",
+    "parent": 126
+  },
+  {
+    "id": 11455,
+    "name": "Elizabeth Arden's Perfumes",
+    "slug": "elizabeth-ardens-perfumes",
+    "parent": 146
+  },
+  {
+    "id": 1068,
+    "name": "Embellished Sandals",
+    "slug": "embellished-sandals",
+    "parent": 196
+  },
+  {
+    "id": 272,
+    "name": "Espadrille Platform Sandals",
+    "slug": "espadrille-platform-sandals",
+    "parent": 268
+  },
+  {
+    "id": 268,
+    "name": "Espadrille Platform Shoes",
+    "slug": "espadrille-platform-shoes",
+    "parent": 264
+  },
+  {
+    "id": 270,
+    "name": "Espadrille Platform Slides",
+    "slug": "espadrille-platform-slides",
+    "parent": 268
+  },
+  {
+    "id": 269,
+    "name": "Espadrille Platform Sneakers",
+    "slug": "espadrille-platform-sneakers",
+    "parent": 268
+  },
+  {
+    "id": 271,
+    "name": "Espadrille Platform Wedges",
+    "slug": "espadrille-platform-wedges",
+    "parent": 264
+  },
+  {
+    "id": 1558,
+    "name": "Espadrilles",
+    "slug": "espadrilles",
+    "parent": 10380
+  },
+  {
+    "id": 135,
+    "name": "Exercise and Fitness",
+    "slug": "exercise-and-fitness",
+    "parent": 132
+  },
+  {
+    "id": 10573,
+    "name": "exercise and fitness accessories",
+    "slug": "exercise-and-fitness-accessories",
+    "parent": 135
+  },
+  {
+    "id": 10746,
+    "name": "External Hard Disks",
+    "slug": "external-hard-disks",
+    "parent": 128
+  },
+  {
+    "id": 11592,
+    "name": "Eye Makeup",
+    "slug": "eye-makeup",
+    "parent": 144
+  },
+  {
+    "id": 116,
+    "name": "Fabric Softener",
+    "slug": "fabric-softener",
+    "parent": 117
+  },
+  {
+    "id": 11580,
+    "name": "Face Cleansers and Washers",
+    "slug": "face-cleansers-and-washers",
+    "parent": 55
+  },
+  {
+    "id": 11591,
+    "name": "Face Makeup",
+    "slug": "face-makeup",
+    "parent": 144
+  },
+  {
+    "id": 11584,
+    "name": "Face Masks and Exfoliators",
+    "slug": "face-masks-and-exfoliators",
+    "parent": 55
+  },
+  {
+    "id": 10380,
+    "name": "Fashion, Shoes, Bags &amp; Apparel",
+    "slug": "fashion",
+    "parent": 0
+  },
+  {
+    "id": 2144,
+    "name": "Feeding Mats",
+    "slug": "feeding-mats",
+    "parent": 0
+  },
+  {
+    "id": 2134,
+    "name": "Flea &amp; Tick Collar",
+    "slug": "flea-tick-collar",
+    "parent": 0
+  },
+  {
+    "id": 10677,
+    "name": "Flip Flops",
+    "slug": "flip-flops",
+    "parent": 10380
+  },
+  {
+    "id": 2187,
+    "name": "Flying Discs",
+    "slug": "flying-discs",
+    "parent": 0
+  },
+  {
+    "id": 10849,
+    "name": "Food Items",
+    "slug": "food-items",
+    "parent": 10848
+  },
+  {
+    "id": 11511,
+    "name": "Food Processors",
+    "slug": "food-processors",
+    "parent": 11452
+  },
+  {
+    "id": 10848,
+    "name": "Food, Tobacco &amp; Beverages",
+    "slug": "foodtobacco-beverages",
+    "parent": 45
+  },
+  {
+    "id": 10847,
+    "name": "Football Jersey Sets",
+    "slug": "football-jersey-sets",
+    "parent": 180
+  },
+  {
+    "id": 1916,
+    "name": "Formal Shoes",
+    "slug": "formal-shoes",
+    "parent": 22
+  },
+  {
+    "id": 2145,
+    "name": "Fountains",
+    "slug": "fountains",
+    "parent": 0
+  },
+  {
+    "id": 11075,
+    "name": "Front Load Washing Machines",
+    "slug": "front-load-washing-machines",
+    "parent": 10859
+  },
+  {
+    "id": 101,
+    "name": "Frozen Foods",
+    "slug": "frozen-foods",
+    "parent": 0
+  },
+  {
+    "id": 11074,
+    "name": "Fully Automatic Washing Machines",
+    "slug": "fully-automatic-washing-machines",
+    "parent": 10859
+  },
+  {
+    "id": 2108,
+    "name": "Furniture-Style Crates",
+    "slug": "furniture-style-crates",
+    "parent": 0
+  },
+  {
+    "id": 4203,
+    "name": "Furnitures",
+    "slug": "furniture",
+    "parent": 59
+  },
+  {
+    "id": 11687,
+    "name": "Galaxy Buds3 Series",
+    "slug": "galaxy-buds3-series",
+    "parent": 10798
+  },
+  {
+    "id": 11398,
+    "name": "Galaxy Tab A",
+    "slug": "galaxy-tab-a",
+    "parent": 10456
+  },
+  {
+    "id": 11399,
+    "name": "Galaxy Tab Accessories",
+    "slug": "galaxy-tab-accessories",
+    "parent": 10456
+  },
+  {
+    "id": 11397,
+    "name": "Galaxy Tab S",
+    "slug": "galaxy-tab-s",
+    "parent": 10456
+  },
+  {
+    "id": 4893,
+    "name": "Games toys",
+    "slug": "games-toys-and-games",
+    "parent": 151
+  },
+  {
+    "id": 4894,
+    "name": "Games|Scrable Games",
+    "slug": "gamesscrable-games",
+    "parent": 151
+  },
+  {
+    "id": 169,
+    "name": "Gaming Accessories",
+    "slug": "gaming-accessories",
+    "parent": 152
+  },
+  {
+    "id": 10690,
+    "name": "Gaming Chairs",
+    "slug": "gaming-chairs",
+    "parent": 169
+  },
+  {
+    "id": 11513,
+    "name": "Gaming Consoles",
+    "slug": "gaming-consoles",
+    "parent": 152
+  },
+  {
+    "id": 10692,
+    "name": "Gaming keyboards and Mice",
+    "slug": "gaming-keyboards-and-mice",
+    "parent": 169
+  },
+  {
+    "id": 10902,
+    "name": "Gaming Laptop",
+    "slug": "gaming-laptop",
+    "parent": 10481
+  },
+  {
+    "id": 11567,
+    "name": "Gaming TVs",
+    "slug": "gaming-tvs",
+    "parent": 10754
+  },
+  {
+    "id": 139,
+    "name": "Gas cooker",
+    "slug": "gas-cooker",
+    "parent": 59
+  },
+  {
+    "id": 10634,
+    "name": "Gas Stove and Burners",
+    "slug": "gas-stove-and-burners",
+    "parent": 10633
+  },
+  {
+    "id": 2131,
+    "name": "Gates &amp; Doorways",
+    "slug": "gates-doorways",
+    "parent": 0
+  },
+  {
+    "id": 43324,
+    "name": "Generators",
+    "slug": "generators",
+    "parent": 43323
+  },
+  {
+    "id": 11577,
+    "name": "Gift Sets",
+    "slug": "gift-sets",
+    "parent": 146
+  },
+  {
+    "id": 10792,
+    "name": "Google Bluetooth Speakers",
+    "slug": "google-bluetooth-speakers",
+    "parent": 121
+  },
+  {
+    "id": 10803,
+    "name": "Google Earbuds",
+    "slug": "google-earbuds",
+    "parent": 10488
+  },
+  {
+    "id": 11641,
+    "name": "Google Pixel Mobile Phones",
+    "slug": "google-pixel-mobile-phones",
+    "parent": 10442
+  },
+  {
+    "id": 1849,
+    "name": "Grains",
+    "slug": "grains",
+    "parent": 45
+  },
+  {
+    "id": 45,
+    "name": "Grocery",
+    "slug": "grocery",
+    "parent": 0
+  },
+  {
+    "id": 11552,
+    "name": "Guitar &amp; Instrument Microphones",
+    "slug": "guitar-instrument-microphones",
+    "parent": 11538
+  },
+  {
+    "id": 1622,
+    "name": "Gym Shoes",
+    "slug": "gym-shoes",
+    "parent": 27
+  },
+  {
+    "id": 2095,
+    "name": "Hair Accessories",
+    "slug": "hair-accessories",
+    "parent": 103
+  },
+  {
+    "id": 103,
+    "name": "Hair Care",
+    "slug": "hair-care",
+    "parent": 53
+  },
+  {
+    "id": 142,
+    "name": "Hair Dryers",
+    "slug": "hair-dryers",
+    "parent": 103
+  },
+  {
+    "id": 11589,
+    "name": "Hair Styling Products",
+    "slug": "hair-styling-products",
+    "parent": 103
+  },
+  {
+    "id": 11590,
+    "name": "Hair Styling Tools",
+    "slug": "hair-styling-tools",
+    "parent": 103
+  },
+  {
+    "id": 11588,
+    "name": "Hair Treatment and Oils",
+    "slug": "hair-treatment-and-oils",
+    "parent": 103
+  },
+  {
+    "id": 140,
+    "name": "Hair trimmer",
+    "slug": "hair-trimmer",
+    "parent": 103
+  },
+  {
+    "id": 217,
+    "name": "Half Shoe",
+    "slug": "half-shoe",
+    "parent": 10380
+  },
+  {
+    "id": 11599,
+    "name": "Hand and Foot Care",
+    "slug": "hand-and-foot-care",
+    "parent": 11578
+  },
+  {
+    "id": 113,
+    "name": "Handbags",
+    "slug": "handbags",
+    "parent": 31
+  },
+  {
+    "id": 11540,
+    "name": "Handheld Wireless Mics",
+    "slug": "handheld-wireless-mics",
+    "parent": 11535
+  },
+  {
+    "id": 11532,
+    "name": "Headphone Cases",
+    "slug": "headphone-cases",
+    "parent": 11530
+  },
+  {
+    "id": 11528,
+    "name": "Headphone Stands &amp; Holders",
+    "slug": "headphone-stands-holders",
+    "parent": 11521
+  },
+  {
+    "id": 177,
+    "name": "Headphones",
+    "slug": "headphones",
+    "parent": 10487
+  },
+  {
+    "id": 11542,
+    "name": "Headset Microphones",
+    "slug": "headset-microphones",
+    "parent": 11535
+  },
+  {
+    "id": 178,
+    "name": "Headsets",
+    "slug": "headsets",
+    "parent": 1870
+  },
+  {
+    "id": 52,
+    "name": "Health and Beauty",
+    "slug": "health-and-beauty",
+    "parent": 0
+  },
+  {
+    "id": 208,
+    "name": "Heaters",
+    "slug": "heaters",
+    "parent": 0
+  },
+  {
+    "id": 275,
+    "name": "Heels",
+    "slug": "heels",
+    "parent": 42
+  },
+  {
+    "id": 11432,
+    "name": "Herbal Supplements",
+    "slug": "herbal-supplements",
+    "parent": 11431
+  },
+  {
+    "id": 1085,
+    "name": "Hiking Sneakers",
+    "slug": "hiking-sneakers",
+    "parent": 27
+  },
+  {
+    "id": 1079,
+    "name": "Hippie Owl Sandals",
+    "slug": "hippie-owl-sandals",
+    "parent": 196
+  },
+  {
+    "id": 11753,
+    "name": "Hobbie &amp; Creative Arts",
+    "slug": "hobbie-creative-arts",
+    "parent": 11752
+  },
+  {
+    "id": 59,
+    "name": "Home and Kitchen",
+    "slug": "home-and-kitchen",
+    "parent": 202
+  },
+  {
+    "id": 202,
+    "name": "Home Appliances",
+    "slug": "home-appliances",
+    "parent": 0
+  },
+  {
+    "id": 10851,
+    "name": "Home Decor",
+    "slug": "home-decor",
+    "parent": 59
+  },
+  {
+    "id": 83,
+    "name": "Home Fragrance",
+    "slug": "home-fragrance",
+    "parent": 4203
+  },
+  {
+    "id": 176,
+    "name": "Home Theatres",
+    "slug": "home-theatres",
+    "parent": 10487
+  },
+  {
+    "id": 10828,
+    "name": "Homii Tablets",
+    "slug": "homii-tablets",
+    "parent": 10760
+  },
+  {
+    "id": 78,
+    "name": "Hoodies &amp; Sweatshirts",
+    "slug": "hoodies-sweatshirts",
+    "parent": 10380
+  },
+  {
+    "id": 231,
+    "name": "Horsebit Loafers",
+    "slug": "horsebit-loafers",
+    "parent": 47
+  },
+  {
+    "id": 154,
+    "name": "Household Fans",
+    "slug": "household-fans",
+    "parent": 209
+  },
+  {
+    "id": 117,
+    "name": "Household Supplies",
+    "slug": "household-supplies",
+    "parent": 59
+  },
+  {
+    "id": 10485,
+    "name": "HP Chromebooks",
+    "slug": "hp-chromebooks",
+    "parent": 10482
+  },
+  {
+    "id": 10903,
+    "name": "Hp Laptops",
+    "slug": "hp-laptops",
+    "parent": 10481
+  },
+  {
+    "id": 11453,
+    "name": "Huawei Mobile Phones",
+    "slug": "huawei-mobile-phones",
+    "parent": 10449
+  },
+  {
+    "id": 10627,
+    "name": "Huawei Smartphones",
+    "slug": "huawei-smartphones",
+    "parent": 10442
+  },
+  {
+    "id": 10458,
+    "name": "Huawei Tablets",
+    "slug": "huawei-tablets",
+    "parent": 10452
+  },
+  {
+    "id": 11047,
+    "name": "Humidifiers",
+    "slug": "humidifiers",
+    "parent": 209
+  },
+  {
+    "id": 10727,
+    "name": "Icona Ceiling Fans",
+    "slug": "icona-ceiling-fans",
+    "parent": 10644
+  },
+  {
+    "id": 10732,
+    "name": "Icona Freezers",
+    "slug": "icona-freezers",
+    "parent": 10649
+  },
+  {
+    "id": 10731,
+    "name": "Icona Fridges",
+    "slug": "icona-fridges",
+    "parent": 10649
+  },
+  {
+    "id": 10728,
+    "name": "Icona Gas Cookers",
+    "slug": "icona-gas-cookers",
+    "parent": 139
+  },
+  {
+    "id": 10725,
+    "name": "Icona Irons",
+    "slug": "icona-iron",
+    "parent": 138
+  },
+  {
+    "id": 10730,
+    "name": "Icona Microwave Ovens",
+    "slug": "icona-microwave-ovens",
+    "parent": 10650
+  },
+  {
+    "id": 10724,
+    "name": "Icona Rice Cookers",
+    "slug": "icona-rice-cookers",
+    "parent": 84
+  },
+  {
+    "id": 10726,
+    "name": "Icona Standing Fans",
+    "slug": "icona-standing-fan",
+    "parent": 10647
+  },
+  {
+    "id": 10729,
+    "name": "Icona Wall Fans",
+    "slug": "icona-wall-fans",
+    "parent": 158
+  },
+  {
+    "id": 2122,
+    "name": "ID Tags &amp; Collar Accessories",
+    "slug": "id-tags-collar-accessories",
+    "parent": 0
+  },
+  {
+    "id": 11072,
+    "name": "Idino Tablets",
+    "slug": "idino-tablets",
+    "parent": 10760
+  },
+  {
+    "id": 10915,
+    "name": "Infinix Hot Series",
+    "slug": "infinix-hot-series",
+    "parent": 10624
+  },
+  {
+    "id": 10624,
+    "name": "Infinix Mobile Phones",
+    "slug": "infinix-mobile-phones",
+    "parent": 10442
+  },
+  {
+    "id": 10916,
+    "name": "Infinix Note Series",
+    "slug": "infinix-note-series",
+    "parent": 10624
+  },
+  {
+    "id": 10913,
+    "name": "Infinix Smart Series",
+    "slug": "infinix-smart-series",
+    "parent": 10624
+  },
+  {
+    "id": 10894,
+    "name": "Infinix Smartphones",
+    "slug": "infinix-smartphones",
+    "parent": 10442
+  },
+  {
+    "id": 11739,
+    "name": "Infinix Tablets",
+    "slug": "infinix-tablets",
+    "parent": 1869
+  },
+  {
+    "id": 10914,
+    "name": "Infinix Zero Series",
+    "slug": "infinix-zero-series",
+    "parent": 10624
+  },
+  {
+    "id": 11538,
+    "name": "Instrument and Performance Microphones",
+    "slug": "instrument-and-performance-microphones",
+    "parent": 11534
+  },
+  {
+    "id": 10455,
+    "name": "iPads",
+    "slug": "ipads",
+    "parent": 10452
+  },
+  {
+    "id": 10447,
+    "name": "iPhones",
+    "slug": "iphones",
+    "parent": 10442
+  },
+  {
+    "id": 138,
+    "name": "irons",
+    "slug": "irons",
+    "parent": 117
+  },
+  {
+    "id": 159,
+    "name": "Irons and Steamers",
+    "slug": "irons-and-steamers",
+    "parent": 117
+  },
+  {
+    "id": 214,
+    "name": "Italian Shoes",
+    "slug": "italian-shoes",
+    "parent": 22
+  },
+  {
+    "id": 10774,
+    "name": "Itel Keypad Phones",
+    "slug": "itel-keypad-phones",
+    "parent": 10492
+  },
+  {
+    "id": 10626,
+    "name": "iTel Smartphones",
+    "slug": "itel-smartphones",
+    "parent": 10442
+  },
+  {
+    "id": 10457,
+    "name": "Itel Tablets",
+    "slug": "itel-tablets",
+    "parent": 10452
+  },
+  {
+    "id": 10684,
+    "name": "iTel Yam Phones",
+    "slug": "itel-yam-phones",
+    "parent": 10492
+  },
+  {
+    "id": 79,
+    "name": "Jackets &amp; Coats",
+    "slug": "jackets-coats",
+    "parent": 10380
+  },
+  {
+    "id": 10621,
+    "name": "JBL Bluetooth Speakers",
+    "slug": "jbl-bluetooth-speakers",
+    "parent": 121
+  },
+  {
+    "id": 10674,
+    "name": "JBL Earbuds",
+    "slug": "jbl-earbuds",
+    "parent": 10488
+  },
+  {
+    "id": 10622,
+    "name": "JBL Headphones",
+    "slug": "jbl-headphones",
+    "parent": 177
+  },
+  {
+    "id": 10663,
+    "name": "JBL Home Theatre Sound Bars",
+    "slug": "jbl-home-theatre-sound-bars",
+    "parent": 176
+  },
+  {
+    "id": 10662,
+    "name": "JBL PartyBox",
+    "slug": "jbl-partybox",
+    "parent": 122
+  },
+  {
+    "id": 10826,
+    "name": "JBL Sound Bars",
+    "slug": "jbl-sound-bars",
+    "parent": 10686
+  },
+  {
+    "id": 11840,
+    "name": "Jerry Power Home Theatres",
+    "slug": "jerry-power-home-theatres",
+    "parent": 176
+  },
+  {
+    "id": 1058,
+    "name": "Jerry Sandals",
+    "slug": "jerry-sandals",
+    "parent": 196
+  },
+  {
+    "id": 180,
+    "name": "Jersey",
+    "slug": "jersey",
+    "parent": 135
+  },
+  {
+    "id": 114,
+    "name": "Jewelry",
+    "slug": "jewelry",
+    "parent": 10380
+  },
+  {
+    "id": 10588,
+    "name": "Jogging Shoes",
+    "slug": "jogging-shoes",
+    "parent": 27
+  },
+  {
+    "id": 10886,
+    "name": "Juice Dispensers",
+    "slug": "juice-dispensers",
+    "parent": 202
+  },
+  {
+    "id": 10996,
+    "name": "Juicers",
+    "slug": "juicers",
+    "parent": 202
+  },
+  {
+    "id": 11848,
+    "name": "JVC Home Theatres",
+    "slug": "jvc-home-theatres",
+    "parent": 176
+  },
+  {
+    "id": 85,
+    "name": "Kettles",
+    "slug": "kettles",
+    "parent": 202
+  },
+  {
+    "id": 10775,
+    "name": "Keypad Phones",
+    "slug": "keypad-phones",
+    "parent": 10449
+  },
+  {
+    "id": 188,
+    "name": "Kids fashion",
+    "slug": "kids-fashion",
+    "parent": 10380
+  },
+  {
+    "id": 10890,
+    "name": "Kids Jersey",
+    "slug": "kids-jersey",
+    "parent": 180
+  },
+  {
+    "id": 112,
+    "name": "Kids Luggage",
+    "slug": "kids-luggage",
+    "parent": 31
+  },
+  {
+    "id": 10760,
+    "name": "Kids Tablets",
+    "slug": "kids-tablets",
+    "parent": 10452
+  },
+  {
+    "id": 230,
+    "name": "Kiltie Loafers",
+    "slug": "kiltie-loafers",
+    "parent": 47
+  },
+  {
+    "id": 43,
+    "name": "Ladies Sneakers",
+    "slug": "ladies-sneakers-in-ghana",
+    "parent": 42
+  },
+  {
+    "id": 183,
+    "name": "Laptop Bag",
+    "slug": "laptop-bag",
+    "parent": 128
+  },
+  {
+    "id": 10481,
+    "name": "Laptops",
+    "slug": "laptops",
+    "parent": 10681
+  },
+  {
+    "id": 115,
+    "name": "Laundry",
+    "slug": "laundry",
+    "parent": 0
+  },
+  {
+    "id": 118,
+    "name": "Laundry Detergents",
+    "slug": "laundry-detergents",
+    "parent": 0
+  },
+  {
+    "id": 11541,
+    "name": "Lavailer(Clip-on) Wireless Microphones",
+    "slug": "lavailerclip-on-wireless-microphones",
+    "parent": 11535
+  },
+  {
+    "id": 10483,
+    "name": "Lenovo Chromebooks",
+    "slug": "lenovo-chromebooks",
+    "parent": 10482
+  },
+  {
+    "id": 10904,
+    "name": "Lenovo Laptops",
+    "slug": "lenovo-laptops",
+    "parent": 10481
+  },
+  {
+    "id": 10793,
+    "name": "LG Bluetooth Speakers",
+    "slug": "lg-bluetooth-speakers",
+    "parent": 121
+  },
+  {
+    "id": 10919,
+    "name": "LG Home Appliances",
+    "slug": "lg-home-appliances",
+    "parent": 202
+  },
+  {
+    "id": 11844,
+    "name": "LG Home Theatres",
+    "slug": "lg-home-theatres",
+    "parent": 176
+  },
+  {
+    "id": 11586,
+    "name": "Lip Care",
+    "slug": "lip-care",
+    "parent": 55
+  },
+  {
+    "id": 11593,
+    "name": "Lip Makeup",
+    "slug": "lip-makeup",
+    "parent": 144
+  },
+  {
+    "id": 2175,
+    "name": "Litter &amp; Housebreaking",
+    "slug": "litter-housebreaking",
+    "parent": 0
+  },
+  {
+    "id": 2177,
+    "name": "Litter Boxes",
+    "slug": "litter-boxes",
+    "parent": 2175
+  },
+  {
+    "id": 1409,
+    "name": "Loafer Heels",
+    "slug": "loafer-heels",
+    "parent": 275
+  },
+  {
+    "id": 1069,
+    "name": "Loafer Sling Back",
+    "slug": "loafer-sling-back",
+    "parent": 196
+  },
+  {
+    "id": 47,
+    "name": "Loafers",
+    "slug": "loafers",
+    "parent": 22
+  },
+  {
+    "id": 10808,
+    "name": "Logitech Bluetooth Speakers in Ghana",
+    "slug": "logitech-bluetooth-speakers-in-ghana",
+    "parent": 121
+  },
+  {
+    "id": 10806,
+    "name": "Logitech headphones",
+    "slug": "logitech-headphones",
+    "parent": 177
+  },
+  {
+    "id": 108,
+    "name": "Luggage Sets &amp; Carry Ons",
+    "slug": "luggage-sets-carry-ons",
+    "parent": 31
+  },
+  {
+    "id": 11576,
+    "name": "Luxury and Designer Perfumes",
+    "slug": "luxury-and-designer-perfumes",
+    "parent": 146
+  },
+  {
+    "id": 11454,
+    "name": "MacBook Air M1",
+    "slug": "macbook-air-m1",
+    "parent": 10493
+  },
+  {
+    "id": 10502,
+    "name": "Macbook Air M2",
+    "slug": "macbook-air-m2",
+    "parent": 10493
+  },
+  {
+    "id": 10505,
+    "name": "MacBook Pro 13",
+    "slug": "macbook-pro-13",
+    "parent": 10493
+  },
+  {
+    "id": 10506,
+    "name": "MacBook Pro 14",
+    "slug": "macbook-pro-14",
+    "parent": 10493
+  },
+  {
+    "id": 10504,
+    "name": "MacBook Pro 16",
+    "slug": "macbook-pro-16",
+    "parent": 10493
+  },
+  {
+    "id": 144,
+    "name": "Makeup &amp; Cosmetics",
+    "slug": "makeup-cosmetics",
+    "parent": 53
+  },
+  {
+    "id": 11594,
+    "name": "Makeup Brushh and Tools",
+    "slug": "makeup-brushh-and-tools",
+    "parent": 144
+  },
+  {
+    "id": 11595,
+    "name": "Makeup Removers",
+    "slug": "makeup-removers",
+    "parent": 144
+  },
+  {
+    "id": 10796,
+    "name": "Marshall Bluetooth Speakers",
+    "slug": "marshall-bluetooth-speakers",
+    "parent": 121
+  },
+  {
+    "id": 1935,
+    "name": "Mary Jane Heels",
+    "slug": "mary-jane-heels",
+    "parent": 275
+  },
+  {
+    "id": 1076,
+    "name": "Mary Janes Sandals",
+    "slug": "mary-janes-sandals",
+    "parent": 196
+  },
+  {
+    "id": 11849,
+    "name": "MaxBest Home Theatres",
+    "slug": "maxbest",
+    "parent": 176
+  },
+  {
+    "id": 1871,
+    "name": "Memory Cards",
+    "slug": "memory-cards",
+    "parent": 1870
+  },
+  {
+    "id": 24,
+    "name": "Men's Accessories",
+    "slug": "mens-accessories",
+    "parent": 10381
+  },
+  {
+    "id": 11605,
+    "name": "Men's Activewear",
+    "slug": "mens-activewear",
+    "parent": 10678
+  },
+  {
+    "id": 3107,
+    "name": "Men's Bag",
+    "slug": "mens-bag",
+    "parent": 31
+  },
+  {
+    "id": 25,
+    "name": "Men's Boots",
+    "slug": "mens-boots",
+    "parent": 22
+  },
+  {
+    "id": 240,
+    "name": "Men's Closed Back Slippers",
+    "slug": "mens-closed-back-slippers",
+    "parent": 44
+  },
+  {
+    "id": 238,
+    "name": "Men's Flip Flops",
+    "slug": "mens-flip-flops",
+    "parent": 44
+  },
+  {
+    "id": 1881,
+    "name": "Men's Fragrance",
+    "slug": "mens-fragrance",
+    "parent": 146
+  },
+  {
+    "id": 11600,
+    "name": "Men's Grooming",
+    "slug": "mens-grooming",
+    "parent": 52
+  },
+  {
+    "id": 11603,
+    "name": "Men's Hair Care",
+    "slug": "mens-hair-care",
+    "parent": 11600
+  },
+  {
+    "id": 167,
+    "name": "Men's Jeans",
+    "slug": "mens-jeans",
+    "parent": 10678
+  },
+  {
+    "id": 67,
+    "name": "Men's Khaki",
+    "slug": "mens-khaki",
+    "parent": 10678
+  },
+  {
+    "id": 44,
+    "name": "Men's Sandals and Slippers",
+    "slug": "mens-sandals-and-slippers",
+    "parent": 22
+  },
+  {
+    "id": 2264,
+    "name": "Men's Shirt",
+    "slug": "mens-shirt",
+    "parent": 10678
+  },
+  {
+    "id": 22,
+    "name": "Men's Shoes",
+    "slug": "mens-shoes",
+    "parent": 10381
+  },
+  {
+    "id": 11602,
+    "name": "Men's Skin Care",
+    "slug": "mens-skin-care",
+    "parent": 11600
+  },
+  {
+    "id": 11606,
+    "name": "Men's Sleepwear",
+    "slug": "mens-sleepwear",
+    "parent": 10678
+  },
+  {
+    "id": 237,
+    "name": "Men's Slides",
+    "slug": "mens-slides",
+    "parent": 44
+  },
+  {
+    "id": 27,
+    "name": "Men's Sneakers",
+    "slug": "mens-sneakers",
+    "parent": 22
+  },
+  {
+    "id": 2053,
+    "name": "Men's Socks 🧦",
+    "slug": "mens-socks",
+    "parent": 24
+  },
+  {
+    "id": 2102,
+    "name": "Men's Sweaters",
+    "slug": "mens-sweaters",
+    "parent": 10678
+  },
+  {
+    "id": 20,
+    "name": "Men's T-Shirts",
+    "slug": "mens-t-shirts",
+    "parent": 10678
+  },
+  {
+    "id": 28,
+    "name": "Men's Ties",
+    "slug": "mens-ties",
+    "parent": 24
+  },
+  {
+    "id": 37,
+    "name": "Men's Trousers",
+    "slug": "mens-trousers",
+    "parent": 10678
+  },
+  {
+    "id": 1847,
+    "name": "Men's Watch",
+    "slug": "mens-watch",
+    "parent": 24
+  },
+  {
+    "id": 244,
+    "name": "Mens Beach Sandals",
+    "slug": "mens-beach-sandals",
+    "parent": 44
+  },
+  {
+    "id": 256,
+    "name": "Mens Bootie Slippers",
+    "slug": "mens-bootie-slippers",
+    "parent": 44
+  },
+  {
+    "id": 222,
+    "name": "Mens Cap Toe Boots",
+    "slug": "mens-cap-toe-boots",
+    "parent": 25
+  },
+  {
+    "id": 258,
+    "name": "Mens Casual Boots",
+    "slug": "mens-casual-boots",
+    "parent": 25
+  },
+  {
+    "id": 259,
+    "name": "Mens Casual Loafers",
+    "slug": "mens-casual-loafers",
+    "parent": 47
+  },
+  {
+    "id": 260,
+    "name": "Mens Casual Oxford Shoes",
+    "slug": "mens-casual-oxford-shoes",
+    "parent": 25
+  },
+  {
+    "id": 29,
+    "name": "Mens Casual Shoes",
+    "slug": "mens-casual-shoes",
+    "parent": 22
+  },
+  {
+    "id": 220,
+    "name": "Mens Chelsea Boots",
+    "slug": "mens-chelsea-boots",
+    "parent": 25
+  },
+  {
+    "id": 241,
+    "name": "Mens Clog",
+    "slug": "mens-clog",
+    "parent": 44
+  },
+  {
+    "id": 10678,
+    "name": "Mens Clothing",
+    "slug": "mens-clothing",
+    "parent": 10381
+  },
+  {
+    "id": 257,
+    "name": "Mens Combat Boots",
+    "slug": "mens-combat-boots",
+    "parent": 25
+  },
+  {
+    "id": 246,
+    "name": "Mens Cork Sandals",
+    "slug": "mens-cork-sandals",
+    "parent": 44
+  },
+  {
+    "id": 243,
+    "name": "Mens Dress Sandals",
+    "slug": "mens-dress-sandals",
+    "parent": 44
+  },
+  {
+    "id": 261,
+    "name": "Mens Espadrilles",
+    "slug": "mens-espadrilles",
+    "parent": 1558
+  },
+  {
+    "id": 10381,
+    "name": "Mens Fashion",
+    "slug": "mens-fashion",
+    "parent": 10380
+  },
+  {
+    "id": 251,
+    "name": "Mens Fisherman Sandals",
+    "slug": "mens-fisherman-sandals",
+    "parent": 44
+  },
+  {
+    "id": 242,
+    "name": "Mens Gladiator Sandal",
+    "slug": "mens-gladiator-sandal",
+    "parent": 44
+  },
+  {
+    "id": 254,
+    "name": "Mens Half Shoe",
+    "slug": "mens-half-shoe",
+    "parent": 217
+  },
+  {
+    "id": 1043,
+    "name": "Mens Hiking Boot",
+    "slug": "mens-hiking-boot",
+    "parent": 25
+  },
+  {
+    "id": 226,
+    "name": "Mens Hiking Boots",
+    "slug": "mens-hiking-boots",
+    "parent": 25
+  },
+  {
+    "id": 1974,
+    "name": "Mens Hiking Sandals",
+    "slug": "mens-hiking-sandals",
+    "parent": 44
+  },
+  {
+    "id": 248,
+    "name": "Mens Luna Sandals",
+    "slug": "mens-luna-sandals",
+    "parent": 44
+  },
+  {
+    "id": 252,
+    "name": "Mens Mule Slippers",
+    "slug": "mens-mule-slippers",
+    "parent": 44
+  },
+  {
+    "id": 253,
+    "name": "Mens Scuff Slippers",
+    "slug": "mens-scuff-slippers",
+    "parent": 44
+  },
+  {
+    "id": 255,
+    "name": "Mens Shearling Slippers",
+    "slug": "mens-shearling-slippers",
+    "parent": 44
+  },
+  {
+    "id": 250,
+    "name": "Mens Sling Back Sandals",
+    "slug": "mens-sling-back-sandals",
+    "parent": 44
+  },
+  {
+    "id": 247,
+    "name": "Mens Thong Sandals",
+    "slug": "mens-thong-sandals",
+    "parent": 44
+  },
+  {
+    "id": 249,
+    "name": "Mens Thong Slippers",
+    "slug": "mens-thong-slippers",
+    "parent": 44
+  },
+  {
+    "id": 245,
+    "name": "Mens Water Sandals",
+    "slug": "mens-water-sandals",
+    "parent": 44
+  },
+  {
+    "id": 221,
+    "name": "Mens Winter Boots",
+    "slug": "mens-winter-boots",
+    "parent": 25
+  },
+  {
+    "id": 110,
+    "name": "Messenger Bags",
+    "slug": "messenger-bags",
+    "parent": 31
+  },
+  {
+    "id": 11539,
+    "name": "Microphone Accessories",
+    "slug": "microphone-accessories",
+    "parent": 11534
+  },
+  {
+    "id": 11529,
+    "name": "Microphone Boom Arms &amp; Stands",
+    "slug": "microphone-boom-arms-stands",
+    "parent": 11521
+  },
+  {
+    "id": 11534,
+    "name": "Microphones",
+    "slug": "microphones",
+    "parent": 10487
+  },
+  {
+    "id": 10923,
+    "name": "Microsoft Laptops",
+    "slug": "microsoft-laptops",
+    "parent": 10481
+  },
+  {
+    "id": 10650,
+    "name": "Microwave Oven",
+    "slug": "microwave-oven",
+    "parent": 202
+  },
+  {
+    "id": 10868,
+    "name": "MIKACHI Rice Cookers",
+    "slug": "mikachi-rice-cookers",
+    "parent": 84
+  },
+  {
+    "id": 10781,
+    "name": "Mikachi Standing Fan",
+    "slug": "mikachi-standing-fan",
+    "parent": 10647
+  },
+  {
+    "id": 11020,
+    "name": "Mitsui Air Conditioners",
+    "slug": "mitsui-air-conditioners",
+    "parent": 210
+  },
+  {
+    "id": 10885,
+    "name": "Mitsui Blenders",
+    "slug": "mitsui-blenders",
+    "parent": 68
+  },
+  {
+    "id": 11022,
+    "name": "Mitsui Deep Freezer",
+    "slug": "mitsui-deep-freezer",
+    "parent": 11021
+  },
+  {
+    "id": 10873,
+    "name": "Mitsui Fans",
+    "slug": "mitsui-fans",
+    "parent": 157
+  },
+  {
+    "id": 11069,
+    "name": "Mitsui Household Fans",
+    "slug": "mitsui-household-fans",
+    "parent": 154
+  },
+  {
+    "id": 10449,
+    "name": "Mobile Phones",
+    "slug": "mobile-phones",
+    "parent": 1869
+  },
+  {
+    "id": 11581,
+    "name": "Moisturizers and Serums",
+    "slug": "moisturizers-and-serums",
+    "parent": 55
+  },
+  {
+    "id": 11514,
+    "name": "Monitors &amp; Displays",
+    "slug": "monitors-displays",
+    "parent": 126
+  },
+  {
+    "id": 90,
+    "name": "Monk Strap Shoes",
+    "slug": "monk-strap-shoes",
+    "parent": 1916
+  },
+  {
+    "id": 11624,
+    "name": "Motorola Mobile Phones",
+    "slug": "motorola-mobile-phones",
+    "parent": 10442
+  },
+  {
+    "id": 11026,
+    "name": "MSI Laptops",
+    "slug": "msi-laptops",
+    "parent": 10481
+  },
+  {
+    "id": 1071,
+    "name": "Multi Strap Sandals",
+    "slug": "multi-strap-sandals",
+    "parent": 196
+  },
+  {
+    "id": 11080,
+    "name": "Nasco Televisions",
+    "slug": "nasco-televisions",
+    "parent": 10754
+  },
+  {
+    "id": 10524,
+    "name": "National Team Jerseys",
+    "slug": "national-team-jerseys",
+    "parent": 180
+  },
+  {
+    "id": 10807,
+    "name": "Neckties",
+    "slug": "neckties",
+    "parent": 24
+  },
+  {
+    "id": 10893,
+    "name": "Neon Blenders",
+    "slug": "neon-blenders",
+    "parent": 68
+  },
+  {
+    "id": 10892,
+    "name": "Neon Rice Cookers",
+    "slug": "neon-rice-cookers",
+    "parent": 84
+  },
+  {
+    "id": 173,
+    "name": "Networking Tools",
+    "slug": "networking-tools",
+    "parent": 128
+  },
+  {
+    "id": 11519,
+    "name": "Networking Tools and Devices",
+    "slug": "networking-tools-and-devices",
+    "parent": 126
+  },
+  {
+    "id": 10700,
+    "name": "Nintendo Consoles",
+    "slug": "nintendo-consoles",
+    "parent": 11513
+  },
+  {
+    "id": 10701,
+    "name": "Nintendo Games",
+    "slug": "nintendo-games",
+    "parent": 10703
+  },
+  {
+    "id": 10801,
+    "name": "Nokia Earbuds",
+    "slug": "nokia-earbuds",
+    "parent": 10488
+  },
+  {
+    "id": 10623,
+    "name": "Nokia Smartphones",
+    "slug": "nokia-smartphones",
+    "parent": 10442
+  },
+  {
+    "id": 10491,
+    "name": "Nokia Yam Phones",
+    "slug": "nokia-yam-phones",
+    "parent": 10492
+  },
+  {
+    "id": 2178,
+    "name": "Odor &amp; Stain",
+    "slug": "odor-stain",
+    "parent": 2175
+  },
+  {
+    "id": 2179,
+    "name": "Odor &amp; Stain Rmovers",
+    "slug": "odor-stain-rmovers",
+    "parent": 2175
+  },
+  {
+    "id": 191,
+    "name": "Office and School Supplies",
+    "slug": "office-and-school-supplies",
+    "parent": 58
+  },
+  {
+    "id": 58,
+    "name": "Office and Stationery Products",
+    "slug": "office-and-stationery-products",
+    "parent": 0
+  },
+  {
+    "id": 192,
+    "name": "Office Products",
+    "slug": "office-products",
+    "parent": 58
+  },
+  {
+    "id": 11509,
+    "name": "Oppo Mobile Phones",
+    "slug": "oppo-mobile-phones",
+    "parent": 10442
+  },
+  {
+    "id": 11524,
+    "name": "Optical Cables",
+    "slug": "optical-cables",
+    "parent": 11520
+  },
+  {
+    "id": 10582,
+    "name": "Oraimo bluetooth Speakers",
+    "slug": "oraimo-bluetooth-speakers",
+    "parent": 121
+  },
+  {
+    "id": 10862,
+    "name": "Oraimo Cables",
+    "slug": "oraimo-cables",
+    "parent": 190
+  },
+  {
+    "id": 10709,
+    "name": "Oraimo Car Chargers",
+    "slug": "oraimo-car-chargers",
+    "parent": 10583
+  },
+  {
+    "id": 10583,
+    "name": "Oraimo Chargers",
+    "slug": "oraimo-chargers",
+    "parent": 125
+  },
+  {
+    "id": 10584,
+    "name": "Oraimo Earbuds",
+    "slug": "oraimo-earbuds",
+    "parent": 10488
+  },
+  {
+    "id": 10586,
+    "name": "Oraimo Earphones",
+    "slug": "oraimo-earphones",
+    "parent": 10585
+  },
+  {
+    "id": 11097,
+    "name": "Oraimo Grooming",
+    "slug": "oraimo-grooming",
+    "parent": 53
+  },
+  {
+    "id": 10587,
+    "name": "Oraimo Headphones",
+    "slug": "oraimo-headphones",
+    "parent": 177
+  },
+  {
+    "id": 10763,
+    "name": "Oraimo Home Appliances",
+    "slug": "oraimo-home-appliances",
+    "parent": 202
+  },
+  {
+    "id": 10711,
+    "name": "Oraimo Mobile Accessories",
+    "slug": "oraimo-mobile-accessories",
+    "parent": 1870
+  },
+  {
+    "id": 10580,
+    "name": "Oraimo Power Banks",
+    "slug": "oraimo-power-bank",
+    "parent": 134
+  },
+  {
+    "id": 10712,
+    "name": "Oraimo Smart Accessories",
+    "slug": "oraimo-smart-accessories",
+    "parent": 10578
+  },
+  {
+    "id": 10577,
+    "name": "Oraimo Smart Watch",
+    "slug": "oraimo-smart-watch",
+    "parent": 10576
+  },
+  {
+    "id": 11414,
+    "name": "Oraimo Toasters",
+    "slug": "oraimo-toasters",
+    "parent": 11413
+  },
+  {
+    "id": 105,
+    "name": "Oral Care",
+    "slug": "oral-care",
+    "parent": 53
+  },
+  {
+    "id": 11870,
+    "name": "Outdoor Speakers",
+    "slug": "outdoor-speakers",
+    "parent": 122
+  },
+  {
+    "id": 162,
+    "name": "Oxford Shirts",
+    "slug": "oxford-shirts",
+    "parent": 2264
+  },
+  {
+    "id": 86,
+    "name": "Oxford Shoes",
+    "slug": "oxford-shoes",
+    "parent": 1916
+  },
+  {
+    "id": 189,
+    "name": "Pantry Staple",
+    "slug": "pantry-staple",
+    "parent": 0
+  },
+  {
+    "id": 11445,
+    "name": "Party Speakers",
+    "slug": "party-speakers",
+    "parent": 122
+  },
+  {
+    "id": 10691,
+    "name": "PC Games",
+    "slug": "pc-games",
+    "parent": 10703
+  },
+  {
+    "id": 229,
+    "name": "Penny Loafer",
+    "slug": "penny-loafer",
+    "parent": 47
+  },
+  {
+    "id": 119,
+    "name": "Pepsodent",
+    "slug": "pepsodent",
+    "parent": 0
+  },
+  {
+    "id": 146,
+    "name": "Perfumes",
+    "slug": "perfumes-shop",
+    "parent": 52
+  },
+  {
+    "id": 11517,
+    "name": "Peripherals",
+    "slug": "peripherals",
+    "parent": 126
+  },
+  {
+    "id": 1870,
+    "name": "Phone Accessories",
+    "slug": "phone-accessories",
+    "parent": 1869
+  },
+  {
+    "id": 10631,
+    "name": "Phone Cases and Covers",
+    "slug": "phone-cases-and-covers",
+    "parent": 1870
+  },
+  {
+    "id": 1869,
+    "name": "Phones and Tablets",
+    "slug": "phones-and-tablets",
+    "parent": 126
+  },
+  {
+    "id": 1066,
+    "name": "Platform Sandals",
+    "slug": "platform-sandals",
+    "parent": 196
+  },
+  {
+    "id": 825,
+    "name": "Platform Shoes",
+    "slug": "platform-shoes",
+    "parent": 42
+  },
+  {
+    "id": 10688,
+    "name": "PlayStation 4 Video Games",
+    "slug": "playstation-4-video-games",
+    "parent": 10703
+  },
+  {
+    "id": 10704,
+    "name": "PlayStation Consoles",
+    "slug": "playstation-consoles",
+    "parent": 11513
+  },
+  {
+    "id": 11544,
+    "name": "Podcasting Microphones",
+    "slug": "podcasting-microphones",
+    "parent": 11536
+  },
+  {
+    "id": 30,
+    "name": "Polo Shirts",
+    "slug": "polo-shirts",
+    "parent": 2264
+  },
+  {
+    "id": 2180,
+    "name": "Pooper Scoops &amp; Bags",
+    "slug": "pooper-scoops-bags",
+    "parent": 2175
+  },
+  {
+    "id": 11553,
+    "name": "Pop Filters &amp; Windstands",
+    "slug": "pop-filters-windstands",
+    "parent": 11539
+  },
+  {
+    "id": 10987,
+    "name": "Popcorn Machines",
+    "slug": "popcorn-machines",
+    "parent": 202
+  },
+  {
+    "id": 11867,
+    "name": "Portable Speakers",
+    "slug": "portable-speakers",
+    "parent": 122
+  },
+  {
+    "id": 134,
+    "name": "Power Banks",
+    "slug": "power-banks",
+    "parent": 1870
+  },
+  {
+    "id": 10758,
+    "name": "Power Stabilizer",
+    "slug": "power-stabilizers",
+    "parent": 202
+  },
+  {
+    "id": 11638,
+    "name": "Pre-Owned",
+    "slug": "pre-owned",
+    "parent": 0
+  },
+  {
+    "id": 11614,
+    "name": "Printers",
+    "slug": "printers",
+    "parent": 11518
+  },
+  {
+    "id": 11518,
+    "name": "Printers Scanners &amp; Projectors",
+    "slug": "printers-scanners-projectors",
+    "parent": 126
+  },
+  {
+    "id": 11546,
+    "name": "Professional USB Mics",
+    "slug": "professional-usb-mics",
+    "parent": 11536
+  },
+  {
+    "id": 11617,
+    "name": "Projecter, Scanner, Printer Accessories",
+    "slug": "projecter-scanner-printer-accessories",
+    "parent": 11518
+  },
+  {
+    "id": 11616,
+    "name": "Projectors",
+    "slug": "projectors",
+    "parent": 11518
+  },
+  {
+    "id": 11530,
+    "name": "Protective Cases &amp; Covers",
+    "slug": "protective-cases-covers",
+    "parent": 10787
+  },
+  {
+    "id": 10689,
+    "name": "PS 5 Video Games",
+    "slug": "ps-5-video-games",
+    "parent": 10703
+  },
+  {
+    "id": 236,
+    "name": "Pump Loafers",
+    "slug": "pump-loafers",
+    "parent": 47
+  },
+  {
+    "id": 2115,
+    "name": "Purses",
+    "slug": "purses",
+    "parent": 0
+  },
+  {
+    "id": 1081,
+    "name": "Pvc Sandals",
+    "slug": "pvc-sandals",
+    "parent": 196
+  },
+  {
+    "id": 10698,
+    "name": "Racing Wheels &amp; Flight Sticks",
+    "slug": "racing-wheels-flight-sticks",
+    "parent": 169
+  },
+  {
+    "id": 10922,
+    "name": "Razer Laptops",
+    "slug": "razer-laptops",
+    "parent": 10481
+  },
+  {
+    "id": 11525,
+    "name": "RCA Cables",
+    "slug": "rca-cables",
+    "parent": 11520
+  },
+  {
+    "id": 10649,
+    "name": "Refrigerators",
+    "slug": "refrigerators",
+    "parent": 202
+  },
+  {
+    "id": 10453,
+    "name": "Refurbished Phones",
+    "slug": "refurbished-phones",
+    "parent": 1869
+  },
+  {
+    "id": 11640,
+    "name": "Renewed",
+    "slug": "renewed",
+    "parent": 0
+  },
+  {
+    "id": 11474,
+    "name": "Renewed Samsung Phones",
+    "slug": "renewed-samsung-phones",
+    "parent": 10476
+  },
+  {
+    "id": 11639,
+    "name": "Repackage",
+    "slug": "repackage",
+    "parent": 0
+  },
+  {
+    "id": 11549,
+    "name": "Ribbon Microphones",
+    "slug": "ribbon-microphones",
+    "parent": 11537
+  },
+  {
+    "id": 1850,
+    "name": "Rice",
+    "slug": "rice",
+    "parent": 45
+  },
+  {
+    "id": 84,
+    "name": "Rice Cookers",
+    "slug": "rice-cookers",
+    "parent": 202
+  },
+  {
+    "id": 1059,
+    "name": "Rope Sandals",
+    "slug": "rope-sandals",
+    "parent": 196
+  },
+  {
+    "id": 1082,
+    "name": "Running Shoes",
+    "slug": "running-shoes",
+    "parent": 27
+  },
+  {
+    "id": 10794,
+    "name": "Samsung Bluetooth Speakers",
+    "slug": "samsung-bluetooth-speakers",
+    "parent": 121
+  },
+  {
+    "id": 10484,
+    "name": "Samsung Chromebooks",
+    "slug": "samsung-chromebooks",
+    "parent": 10482
+  },
+  {
+    "id": 10798,
+    "name": "Samsung Earbuds",
+    "slug": "samsung-earbuds",
+    "parent": 10488
+  },
+  {
+    "id": 10769,
+    "name": "Samsung Galaxy A Series Smartphones",
+    "slug": "samsung-galaxy-a-series-smartphones",
+    "parent": 10476
+  },
+  {
+    "id": 10901,
+    "name": "Samsung Galaxy Note Phones",
+    "slug": "samsung-galaxy-note-phones",
+    "parent": 10476
+  },
+  {
+    "id": 10770,
+    "name": "Samsung Galaxy S Series Mobiles",
+    "slug": "samsung-galaxy-s-series-mobiles",
+    "parent": 10476
+  },
+  {
+    "id": 10768,
+    "name": "Samsung Galaxy Z Series Mobiles",
+    "slug": "samsung-galaxy-z-series-mobiles",
+    "parent": 10476
+  },
+  {
+    "id": 10737,
+    "name": "Samsung home appliances",
+    "slug": "samsung-home-appliances",
+    "parent": 202
+  },
+  {
+    "id": 11842,
+    "name": "Samsung Home Theatres",
+    "slug": "samsung-home-theatres",
+    "parent": 176
+  },
+  {
+    "id": 10920,
+    "name": "Samsung Laptop Computers",
+    "slug": "samsung-laptop-computers",
+    "parent": 10481
+  },
+  {
+    "id": 10476,
+    "name": "Samsung Mobile Phones",
+    "slug": "samsung-mobile-phones",
+    "parent": 10442
+  },
+  {
+    "id": 10918,
+    "name": "Samsung Smart Watches",
+    "slug": "samsung-smart-watches",
+    "parent": 10576
+  },
+  {
+    "id": 10456,
+    "name": "Samsung Tablets",
+    "slug": "samsung-tablets",
+    "parent": 10452
+  },
+  {
+    "id": 10917,
+    "name": "Samsung Televisions",
+    "slug": "samsung-televisions",
+    "parent": 10754
+  },
+  {
+    "id": 10683,
+    "name": "Samsung Yam Phones",
+    "slug": "samsung-yam-phones",
+    "parent": 10492
+  },
+  {
+    "id": 10995,
+    "name": "Sandwich Maker",
+    "slug": "sandwich-maker",
+    "parent": 202
+  },
+  {
+    "id": 11615,
+    "name": "Scanner",
+    "slug": "scanner",
+    "parent": 11518
+  },
+  {
+    "id": 46,
+    "name": "School and Office",
+    "slug": "school-and-office",
+    "parent": 58
+  },
+  {
+    "id": 10593,
+    "name": "Screen Protectors",
+    "slug": "screen-protectors",
+    "parent": 1870
+  },
+  {
+    "id": 11573,
+    "name": "Security &amp; Surveillance",
+    "slug": "security-surveillance",
+    "parent": 11569
+  },
+  {
+    "id": 11073,
+    "name": "Semi Automatic Washing Machines",
+    "slug": "semi-automatic-washing-machines",
+    "parent": 10859
+  },
+  {
+    "id": 10638,
+    "name": "Sewing Machines",
+    "slug": "sewing-machines",
+    "parent": 117
+  },
+  {
+    "id": 10568,
+    "name": "Sexual Products",
+    "slug": "sexual-products",
+    "parent": 52
+  },
+  {
+    "id": 11587,
+    "name": "Shampoo and Conditioners",
+    "slug": "shampoo-and-conditioners",
+    "parent": 103
+  },
+  {
+    "id": 11601,
+    "name": "Shaving and Beard Care",
+    "slug": "shaving-and-beard-care",
+    "parent": 11600
+  },
+  {
+    "id": 2101,
+    "name": "Shirts",
+    "slug": "shirts",
+    "parent": 0
+  },
+  {
+    "id": 11554,
+    "name": "Shock Mounts",
+    "slug": "shock-mounts",
+    "parent": 11539
+  },
+  {
+    "id": 87,
+    "name": "Shoe Care and Accessories",
+    "slug": "shoe-care-and-accessories",
+    "parent": 10380
+  },
+  {
+    "id": 181,
+    "name": "Shoe Rack",
+    "slug": "shoe-rack",
+    "parent": 0
+  },
+  {
+    "id": 168,
+    "name": "Shoes &amp; Accessories",
+    "slug": "shoes-accessories",
+    "parent": 0
+  },
+  {
+    "id": 36,
+    "name": "Shoulder Bags",
+    "slug": "shoulder-bags",
+    "parent": 3107
+  },
+  {
+    "id": 203,
+    "name": "SHS Students Prospectus",
+    "slug": "shs-students-prospectus",
+    "parent": 46
+  },
+  {
+    "id": 11078,
+    "name": "Single Tub Washing Machines",
+    "slug": "single-tub-washing-machines",
+    "parent": 10859
+  },
+  {
+    "id": 51,
+    "name": "Singlet",
+    "slug": "singlet",
+    "parent": 24
+  },
+  {
+    "id": 1620,
+    "name": "Skateboarding Shoes",
+    "slug": "skateboarding-shoes",
+    "parent": 27
+  },
+  {
+    "id": 55,
+    "name": "Skin Care",
+    "slug": "skin-care",
+    "parent": 53
+  },
+  {
+    "id": 10802,
+    "name": "Skullcandy Earbuds",
+    "slug": "skullcandy-earbuds",
+    "parent": 10488
+  },
+  {
+    "id": 1067,
+    "name": "Slide Sandals",
+    "slug": "slide-sandals",
+    "parent": 196
+  },
+  {
+    "id": 1855,
+    "name": "Slides",
+    "slug": "slides",
+    "parent": 22
+  },
+  {
+    "id": 200,
+    "name": "Sling Back Sandals",
+    "slug": "sling-back-sandals",
+    "parent": 10380
+  },
+  {
+    "id": 234,
+    "name": "Slipper Loafers",
+    "slug": "slipper-loafers",
+    "parent": 47
+  },
+  {
+    "id": 2063,
+    "name": "Small Animals",
+    "slug": "small-animals",
+    "parent": 0
+  },
+  {
+    "id": 11452,
+    "name": "Small Kitchen Appliances",
+    "slug": "small-appliances",
+    "parent": 202
+  },
+  {
+    "id": 10578,
+    "name": "Smart Accessories",
+    "slug": "smart-accessories",
+    "parent": 126
+  },
+  {
+    "id": 11565,
+    "name": "Smart TVs",
+    "slug": "smart-tvs",
+    "parent": 10754
+  },
+  {
+    "id": 10442,
+    "name": "Smartphones",
+    "slug": "smartphones",
+    "parent": 10449
+  },
+  {
+    "id": 10576,
+    "name": "Smartwatch",
+    "slug": "smartwatch",
+    "parent": 126
+  },
+  {
+    "id": 10852,
+    "name": "Sneakers",
+    "slug": "sneakers",
+    "parent": 10380
+  },
+  {
+    "id": 43325,
+    "name": "Socket and Extensions",
+    "slug": "socket-and-extensions",
+    "parent": 43323
+  },
+  {
+    "id": 10797,
+    "name": "Sonos Bluetooth Speakers",
+    "slug": "sonos-bluetooth-speakers",
+    "parent": 121
+  },
+  {
+    "id": 11846,
+    "name": "Sonos Home theatres",
+    "slug": "sonos-home-theatres",
+    "parent": 176
+  },
+  {
+    "id": 10667,
+    "name": "Sony Bluetooth Speakers",
+    "slug": "sony-bluetooth-speakers",
+    "parent": 121
+  },
+  {
+    "id": 10669,
+    "name": "Sony Earbuds",
+    "slug": "sony-earbuds",
+    "parent": 10488
+  },
+  {
+    "id": 10670,
+    "name": "Sony Home Theatres",
+    "slug": "sony-home-theatres",
+    "parent": 176
+  },
+  {
+    "id": 10671,
+    "name": "Sony Sound Systems",
+    "slug": "sony-sound-systems",
+    "parent": 122
+  },
+  {
+    "id": 10686,
+    "name": "Sound Bars",
+    "slug": "sound-bars",
+    "parent": 10487
+  },
+  {
+    "id": 11527,
+    "name": "Speaker Stands and Mounts",
+    "slug": "speaker-stands-and-mounts",
+    "parent": 11521
+  },
+  {
+    "id": 122,
+    "name": "Speakers",
+    "slug": "speakers",
+    "parent": 10487
+  },
+  {
+    "id": 133,
+    "name": "Sports and Fitness",
+    "slug": "sports-and-fitness",
+    "parent": 132
+  },
+  {
+    "id": 132,
+    "name": "Sports and Outdoor",
+    "slug": "sports-and-outdoor",
+    "parent": 0
+  },
+  {
+    "id": 11871,
+    "name": "Sportswear",
+    "slug": "sportswear",
+    "parent": 10380
+  },
+  {
+    "id": 10647,
+    "name": "Standing Fans",
+    "slug": "standing-fans",
+    "parent": 154
+  },
+  {
+    "id": 11521,
+    "name": "Stands &amp; Mounts",
+    "slug": "stands-mounts",
+    "parent": 10787
+  },
+  {
+    "id": 1408,
+    "name": "Stiletto Heels",
+    "slug": "stiletto-heels",
+    "parent": 275
+  },
+  {
+    "id": 1064,
+    "name": "Strappy Sandals",
+    "slug": "strappy-sandals",
+    "parent": 196
+  },
+  {
+    "id": 11545,
+    "name": "Streaming &amp; Gaming Microphones",
+    "slug": "streaming-gaming-microphones",
+    "parent": 11536
+  },
+  {
+    "id": 11559,
+    "name": "Streaming Devices &amp; Set Top Boxes",
+    "slug": "streaming-devices-set-top-boxes",
+    "parent": 11557
+  },
+  {
+    "id": 10571,
+    "name": "Strength training Equipment",
+    "slug": "strength-training-equipment",
+    "parent": 0
+  },
+  {
+    "id": 2117,
+    "name": "Strollers",
+    "slug": "strollers",
+    "parent": 0
+  },
+  {
+    "id": 11537,
+    "name": "Studio &amp; Recording Microphones",
+    "slug": "studio-recording-microphones",
+    "parent": 11534
+  },
+  {
+    "id": 11582,
+    "name": "Sun Screens &amp; Sun Protection",
+    "slug": "sun-screens-sun-protection",
+    "parent": 55
+  },
+  {
+    "id": 35,
+    "name": "Sunglasses",
+    "slug": "sunglasses",
+    "parent": 10380
+  },
+  {
+    "id": 10872,
+    "name": "Suzika Fridges",
+    "slug": "suzika-fridges",
+    "parent": 10649
+  },
+  {
+    "id": 11070,
+    "name": "Suzika Household Fans",
+    "slug": "suzika-household-fans",
+    "parent": 154
+  },
+  {
+    "id": 143,
+    "name": "swimming",
+    "slug": "swimming",
+    "parent": 0
+  },
+  {
+    "id": 155,
+    "name": "Table Fans",
+    "slug": "table-fans",
+    "parent": 154
+  },
+  {
+    "id": 10452,
+    "name": "Tablets",
+    "slug": "tablets",
+    "parent": 1869
+  },
+  {
+    "id": 43321,
+    "name": "Tablets Accessories",
+    "slug": "tablets-accessories",
+    "parent": 10452
+  },
+  {
+    "id": 235,
+    "name": "Tassel Loafers",
+    "slug": "tassel-loafers",
+    "parent": 47
+  },
+  {
+    "id": 1074,
+    "name": "Tatami Sandals",
+    "slug": "tatami-sandals",
+    "parent": 196
+  },
+  {
+    "id": 11003,
+    "name": "Tecno Camon Series",
+    "slug": "tecno-camon-series",
+    "parent": 10625
+  },
+  {
+    "id": 10625,
+    "name": "Tecno Mobile Phones",
+    "slug": "tecno-mobile-phones",
+    "parent": 10442
+  },
+  {
+    "id": 11005,
+    "name": "Tecno Phantom Series",
+    "slug": "tecno-phantom-series",
+    "parent": 10625
+  },
+  {
+    "id": 11006,
+    "name": "Tecno Pop Series",
+    "slug": "tecno-pop-series",
+    "parent": 10625
+  },
+  {
+    "id": 11004,
+    "name": "Tecno Spark Series",
+    "slug": "tecno-spark-series",
+    "parent": 10625
+  },
+  {
+    "id": 11406,
+    "name": "Tecno Tablets",
+    "slug": "tecno-tablets",
+    "parent": 10452
+  },
+  {
+    "id": 10685,
+    "name": "Tecno Yam Phones",
+    "slug": "tecno-yam-phones",
+    "parent": 10492
+  },
+  {
+    "id": 10754,
+    "name": "Televisions",
+    "slug": "televisions",
+    "parent": 11557
+  },
+  {
+    "id": 1084,
+    "name": "Tennis shoes",
+    "slug": "tennis-shoes",
+    "parent": 27
+  },
+  {
+    "id": 161,
+    "name": "Thermometers",
+    "slug": "thermometers",
+    "parent": 468
+  },
+  {
+    "id": 11413,
+    "name": "Toaster",
+    "slug": "toaster",
+    "parent": 202
+  },
+  {
+    "id": 1065,
+    "name": "Toe Loop Sandals",
+    "slug": "toe-loop-sandals",
+    "parent": 196
+  },
+  {
+    "id": 64,
+    "name": "Toilet cleaner",
+    "slug": "toilet-cleaner",
+    "parent": 117
+  },
+  {
+    "id": 106,
+    "name": "Tools and Accessories",
+    "slug": "tools-and-accessories",
+    "parent": 0
+  },
+  {
+    "id": 11076,
+    "name": "Top Load Washing Machines",
+    "slug": "top-load-washing-machines",
+    "parent": 10859
+  },
+  {
+    "id": 80,
+    "name": "Tops",
+    "slug": "tops",
+    "parent": 0
+  },
+  {
+    "id": 151,
+    "name": "Toys and Games",
+    "slug": "toys-and-games",
+    "parent": 0
+  },
+  {
+    "id": 2181,
+    "name": "Training Pads &amp; Trays",
+    "slug": "training-pads-trays",
+    "parent": 2175
+  },
+  {
+    "id": 215,
+    "name": "Travel",
+    "slug": "travel",
+    "parent": 0
+  },
+  {
+    "id": 11558,
+    "name": "TV Accessories",
+    "slug": "tv-accessories",
+    "parent": 11557
+  },
+  {
+    "id": 11557,
+    "name": "TV's &amp; Home Entertainment",
+    "slug": "tvs-home-entertainment",
+    "parent": 126
+  },
+  {
+    "id": 11077,
+    "name": "Twin Tub Washing Machines",
+    "slug": "twin-tub-washing-machines",
+    "parent": 10859
+  },
+  {
+    "id": 10454,
+    "name": "UK Used iPhones",
+    "slug": "uk-used-iphones",
+    "parent": 1869
+  },
+  {
+    "id": 50,
+    "name": "Underwear",
+    "slug": "underwear",
+    "parent": 10678
+  },
+  {
+    "id": 11575,
+    "name": "Unisex Fragrances",
+    "slug": "unisex-fragrances",
+    "parent": 146
+  },
+  {
+    "id": 130,
+    "name": "USB Flash Drives",
+    "slug": "usb-flash-drives",
+    "parent": 128
+  },
+  {
+    "id": 11536,
+    "name": "USB Microphones",
+    "slug": "usb-microphones",
+    "parent": 11534
+  },
+  {
+    "id": 11478,
+    "name": "USB Pendrives",
+    "slug": "usb-pendrives",
+    "parent": 128
+  },
+  {
+    "id": 65,
+    "name": "Vegetable Oil",
+    "slug": "vegetable-oil",
+    "parent": 45
+  },
+  {
+    "id": 10703,
+    "name": "Video Games",
+    "slug": "video-games",
+    "parent": 152
+  },
+  {
+    "id": 152,
+    "name": "Video Games, Consoles and Accessories",
+    "slug": "video-games-consoles-and-accessories",
+    "parent": 126
+  },
+  {
+    "id": 11574,
+    "name": "Videography and Content Creation",
+    "slug": "videography-and-content-creation",
+    "parent": 11569
+  },
+  {
+    "id": 11431,
+    "name": "Vitamins, Minerals and Supplements",
+    "slug": "vitamins-minerals-and-supplements",
+    "parent": 52
+  },
+  {
+    "id": 11510,
+    "name": "Vivo Mobile Phones",
+    "slug": "vivo-mobile-phones",
+    "parent": 10442
+  },
+  {
+    "id": 11058,
+    "name": "Vizio Washing Machines",
+    "slug": "vizio-washing-machines",
+    "parent": 10859
+  },
+  {
+    "id": 11079,
+    "name": "Voltage Regulators",
+    "slug": "voltage-regulators",
+    "parent": 10758
+  },
+  {
+    "id": 10702,
+    "name": "VR Games",
+    "slug": "vr-games",
+    "parent": 10703
+  },
+  {
+    "id": 10694,
+    "name": "VR Headsets",
+    "slug": "vr-headsets",
+    "parent": 169
+  },
+  {
+    "id": 11746,
+    "name": "Waffle Makers",
+    "slug": "waffle-makers",
+    "parent": 11452
+  },
+  {
+    "id": 111,
+    "name": "Waist Packs",
+    "slug": "waist-packs",
+    "parent": 3107
+  },
+  {
+    "id": 10743,
+    "name": "Walkie Talkie phones",
+    "slug": "walkie-talkie-phones",
+    "parent": 10449
+  },
+  {
+    "id": 1621,
+    "name": "Walking Shoes",
+    "slug": "walking-shoes",
+    "parent": 27
+  },
+  {
+    "id": 158,
+    "name": "Wall Fans",
+    "slug": "wall-fans",
+    "parent": 154
+  },
+  {
+    "id": 34,
+    "name": "Wallets and Card Cases",
+    "slug": "wallets-and-card-cases",
+    "parent": 24
+  },
+  {
+    "id": 182,
+    "name": "Wardrobe",
+    "slug": "wardrobe",
+    "parent": 4203
+  },
+  {
+    "id": 10859,
+    "name": "Washing Machines",
+    "slug": "washing-machines",
+    "parent": 202
+  },
+  {
+    "id": 61,
+    "name": "Washing Powder",
+    "slug": "washing-powder",
+    "parent": 118
+  },
+  {
+    "id": 2147,
+    "name": "Water Bottles",
+    "slug": "water-bottles",
+    "parent": 0
+  },
+  {
+    "id": 10985,
+    "name": "Water Dispensers",
+    "slug": "water-dispensers",
+    "parent": 202
+  },
+  {
+    "id": 11533,
+    "name": "Waterproof and Shockproof Cases",
+    "slug": "waterproof-and-shockproof-cases",
+    "parent": 11530
+  },
+  {
+    "id": 10579,
+    "name": "Wearables",
+    "slug": "wearables",
+    "parent": 126
+  },
+  {
+    "id": 195,
+    "name": "Wedge",
+    "slug": "wedge-shoes",
+    "parent": 275
+  },
+  {
+    "id": 1057,
+    "name": "Wedge Sandals",
+    "slug": "wedge-sandals",
+    "parent": 196
+  },
+  {
+    "id": 10991,
+    "name": "WesstPool Power Stabilizers",
+    "slug": "wesstpool-power-stabilizers",
+    "parent": 10758
+  },
+  {
+    "id": 10883,
+    "name": "WestPoint Air Conditioners",
+    "slug": "westpoint-air-conditioners",
+    "parent": 210
+  },
+  {
+    "id": 10870,
+    "name": "Westpoint Blenders",
+    "slug": "westpoint-blenders",
+    "parent": 68
+  },
+  {
+    "id": 10856,
+    "name": "WestPoint Chest Freezers",
+    "slug": "westpoint-chest-freezers",
+    "parent": 10855
+  },
+  {
+    "id": 10865,
+    "name": "Westpoint Gas Cooker",
+    "slug": "westpoint-gas-cooker",
+    "parent": 139
+  },
+  {
+    "id": 11081,
+    "name": "Westpoint Microwave Ovens",
+    "slug": "westpoint-microwave-ovens",
+    "parent": 10650
+  },
+  {
+    "id": 10984,
+    "name": "WestPoint Power Stabilizer",
+    "slug": "westpoint-power-stabilizer",
+    "parent": 10758
+  },
+  {
+    "id": 10983,
+    "name": "WestPoint Pressing Irons",
+    "slug": "westpoint-pressing-irons",
+    "parent": 138
+  },
+  {
+    "id": 10981,
+    "name": "WestPoint Refrigerators",
+    "slug": "westpoint-refrigerators",
+    "parent": 10649
+  },
+  {
+    "id": 10858,
+    "name": "Westpoint Rice Cookers",
+    "slug": "westpoint-rice-cookers",
+    "parent": 84
+  },
+  {
+    "id": 10860,
+    "name": "Westpoint Washing Machines",
+    "slug": "westpoint-washing-machines",
+    "parent": 10859
+  },
+  {
+    "id": 10884,
+    "name": "Westpool Air Conditioners",
+    "slug": "westpool-air-conditioners",
+    "parent": 210
+  },
+  {
+    "id": 10871,
+    "name": "Westpool Blenders",
+    "slug": "westpool-blenders",
+    "parent": 68
+  },
+  {
+    "id": 11023,
+    "name": "Westpool Deep Freezers",
+    "slug": "westpool-deep-freezers",
+    "parent": 11021
+  },
+  {
+    "id": 10854,
+    "name": "Westpool Fridges",
+    "slug": "westpool-fridges",
+    "parent": 10649
+  },
+  {
+    "id": 10866,
+    "name": "Westpool Gas Cookers",
+    "slug": "westpool-gas-cookers",
+    "parent": 139
+  },
+  {
+    "id": 10989,
+    "name": "WestPool Household Fans",
+    "slug": "westpool-household-fans",
+    "parent": 154
+  },
+  {
+    "id": 10990,
+    "name": "WestPool Irons",
+    "slug": "westpool-irons",
+    "parent": 138
+  },
+  {
+    "id": 10992,
+    "name": "Westpool Kettles",
+    "slug": "westpool-kettles",
+    "parent": 85
+  },
+  {
+    "id": 10988,
+    "name": "Westpool Popcorn Machines",
+    "slug": "westpool-popcorn-machines",
+    "parent": 10987
+  },
+  {
+    "id": 10867,
+    "name": "Westpool Rice Cookers",
+    "slug": "westpool-rice-cookers",
+    "parent": 84
+  },
+  {
+    "id": 10993,
+    "name": "WestPool Televisions",
+    "slug": "westpool-televisions",
+    "parent": 10754
+  },
+  {
+    "id": 10861,
+    "name": "WestPool Washing Machines",
+    "slug": "westpool-washing-machines",
+    "parent": 10859
+  },
+  {
+    "id": 10986,
+    "name": "Westpool Water Dispensers",
+    "slug": "westpool-water-dispensers",
+    "parent": 10985
+  },
+  {
+    "id": 11543,
+    "name": "Wireless Conference Microphones",
+    "slug": "wireless-conference-microphones",
+    "parent": 11535
+  },
+  {
+    "id": 11535,
+    "name": "Wireless Microphones",
+    "slug": "wireless-microphones",
+    "parent": 11534
+  },
+  {
+    "id": 174,
+    "name": "Wireless Networks",
+    "slug": "wireless-networks",
+    "parent": 11519
+  },
+  {
+    "id": 279,
+    "name": "Women Ankle Boots",
+    "slug": "women-ankle-boots",
+    "parent": 277
+  },
+  {
+    "id": 277,
+    "name": "Women Boots",
+    "slug": "women-boots",
+    "parent": 42
+  },
+  {
+    "id": 278,
+    "name": "Women Chelsea Boots",
+    "slug": "women-chelsea-boots",
+    "parent": 277
+  },
+  {
+    "id": 1055,
+    "name": "Women Flat Sandals",
+    "slug": "women-flat-sandals",
+    "parent": 196
+  },
+  {
+    "id": 1044,
+    "name": "Women Hiking Boots",
+    "slug": "women-hiking-boots",
+    "parent": 277
+  },
+  {
+    "id": 276,
+    "name": "Women Oxford Shoes",
+    "slug": "women-oxford-shoes",
+    "parent": 42
+  },
+  {
+    "id": 755,
+    "name": "Women Pumps",
+    "slug": "women-pumps",
+    "parent": 42
+  },
+  {
+    "id": 196,
+    "name": "Women Sandals",
+    "slug": "women-sandals",
+    "parent": 42
+  },
+  {
+    "id": 197,
+    "name": "Women Slippers",
+    "slug": "women-slippers",
+    "parent": 42
+  },
+  {
+    "id": 1640,
+    "name": "Women Trekking Sandals",
+    "slug": "women-trekking-sandals",
+    "parent": 196
+  },
+  {
+    "id": 280,
+    "name": "Women Wingtip Boots",
+    "slug": "women-wingtip-boots",
+    "parent": 277
+  },
+  {
+    "id": 32,
+    "name": "Women's Bag",
+    "slug": "womens-bag",
+    "parent": 31
+  },
+  {
+    "id": 2054,
+    "name": "Women's Boat Shoe",
+    "slug": "womens-boat-shoe",
+    "parent": 42
+  },
+  {
+    "id": 1009,
+    "name": "women's brogue shoe",
+    "slug": "womens-brogue-shoe",
+    "parent": 42
+  },
+  {
+    "id": 2235,
+    "name": "Women's Canvas Sneakers",
+    "slug": "womens-canvas-sneakers",
+    "parent": 43
+  },
+  {
+    "id": 1070,
+    "name": "Women's Clog Sandals",
+    "slug": "womens-clog-sandals",
+    "parent": 196
+  },
+  {
+    "id": 1008,
+    "name": "Women's Derby Shoe",
+    "slug": "womens-derby-shoe",
+    "parent": 42
+  },
+  {
+    "id": 267,
+    "name": "Women's Espadrille Flats",
+    "slug": "womens-espadrille-flats",
+    "parent": 264
+  },
+  {
+    "id": 265,
+    "name": "Women's Espadrille Slippers",
+    "slug": "womens-espadrille-slippers",
+    "parent": 264
+  },
+  {
+    "id": 266,
+    "name": "Women's Espadrille Sneakers",
+    "slug": "womens-espadrille-sneakers",
+    "parent": 264
+  },
+  {
+    "id": 263,
+    "name": "Women's Espadrille Wedges",
+    "slug": "womens-espadrille-wedges",
+    "parent": 264
+  },
+  {
+    "id": 41,
+    "name": "Women's Fashion",
+    "slug": "womens-fashion",
+    "parent": 10380
+  },
+  {
+    "id": 194,
+    "name": "Women's Flats",
+    "slug": "womens-flats",
+    "parent": 42
+  },
+  {
+    "id": 1975,
+    "name": "Women's Flip Flops",
+    "slug": "womens-flip-flops",
+    "parent": 197
+  },
+  {
+    "id": 1056,
+    "name": "Women's Gladiator Sandals",
+    "slug": "womens-gladiator-sandals",
+    "parent": 196
+  },
+  {
+    "id": 198,
+    "name": "Women's Loafers Slip On",
+    "slug": "womens-loafers-slip-on",
+    "parent": 42
+  },
+  {
+    "id": 1879,
+    "name": "Women's Perfume",
+    "slug": "womens-perfume",
+    "parent": 146
+  },
+  {
+    "id": 11489,
+    "name": "Women's Perfume Gift Set",
+    "slug": "womens-perfume-gift-set",
+    "parent": 146
+  },
+  {
+    "id": 72,
+    "name": "Women's Shirts",
+    "slug": "womens-shirts",
+    "parent": 0
+  },
+  {
+    "id": 42,
+    "name": "Women's Shoes",
+    "slug": "womens-shoes",
+    "parent": 41
+  },
+  {
+    "id": 57,
+    "name": "Women's Slides",
+    "slug": "womens-slides",
+    "parent": 197
+  },
+  {
+    "id": 1078,
+    "name": "Women's Sport Sandals",
+    "slug": "womens-sport-sandals",
+    "parent": 196
+  },
+  {
+    "id": 1062,
+    "name": "Women's T Strap Sandals",
+    "slug": "womens-t-strap-sandals",
+    "parent": 196
+  },
+  {
+    "id": 1060,
+    "name": "Women's Thong Sandals",
+    "slug": "womens-thong-sandals",
+    "parent": 196
+  },
+  {
+    "id": 1670,
+    "name": "Women's Winter Boots",
+    "slug": "womens-winter-boots",
+    "parent": 277
+  },
+  {
+    "id": 10405,
+    "name": "Womens Desert Boots",
+    "slug": "womens-desert-boots",
+    "parent": 277
+  },
+  {
+    "id": 264,
+    "name": "Womens Espadrilles",
+    "slug": "womens-espadrilles",
+    "parent": 1558
+  },
+  {
+    "id": 262,
+    "name": "Womens Espadrilles Sandals",
+    "slug": "womens-espadrilles-sandals",
+    "parent": 264
+  },
+  {
+    "id": 10435,
+    "name": "Womens Yacht Loafers",
+    "slug": "womens-yacht-loafers",
+    "parent": 42
+  },
+  {
+    "id": 11872,
+    "name": "Woofers &amp; Subwoofers",
+    "slug": "woofers-subwoofers",
+    "parent": 122
+  },
+  {
+    "id": 228,
+    "name": "Work Boots",
+    "slug": "work-boots",
+    "parent": 0
+  },
+  {
+    "id": 10659,
+    "name": "Wster Bluetooth Speakers",
+    "slug": "wster-bluetooth-speakers",
+    "parent": 121
+  },
+  {
+    "id": 10699,
+    "name": "Xbox Games",
+    "slug": "xbox-games",
+    "parent": 10703
+  },
+  {
+    "id": 10693,
+    "name": "Xbox one",
+    "slug": "xbox-one",
+    "parent": 169
+  },
+  {
+    "id": 10696,
+    "name": "Xbox-Consoles",
+    "slug": "xbox-consoles",
+    "parent": 11513
+  },
+  {
+    "id": 10695,
+    "name": "Xboxx one Accessories",
+    "slug": "xboxx-one-accessories",
+    "parent": 10693
+  },
+  {
+    "id": 10751,
+    "name": "Xiaomi Phones",
+    "slug": "xiaomi-phones",
+    "parent": 10442
+  },
+  {
+    "id": 11555,
+    "name": "XLR Cables &amp; Adaptors",
+    "slug": "xlr-cables-adaptors",
+    "parent": 11539
+  },
+  {
+    "id": 10761,
+    "name": "Xtigi Phones",
+    "slug": "xtigi-phones",
+    "parent": 10442
+  },
+  {
+    "id": 10459,
+    "name": "Xtigi Tablets",
+    "slug": "xtigi-tablets",
+    "parent": 10452
+  },
+  {
+    "id": 10404,
+    "name": "Yacht Loafers",
+    "slug": "yacht-loafers",
+    "parent": 47
+  },
+  {
+    "id": 10492,
+    "name": "Yam Phones",
+    "slug": "yam-phones-mobile-phones",
+    "parent": 10449
+  },
+  {
+    "id": 11841,
+    "name": "Yamaha Home Theatres",
+    "slug": "yamaha-home-theatres",
+    "parent": 176
+  },
+  {
+    "id": 11484,
+    "name": "zara perfume men",
+    "slug": "zara-perfume-men",
+    "parent": 11007
+  },
+  {
+    "id": 11007,
+    "name": "Zara Perfumes",
+    "slug": "zara-perfumes",
+    "parent": 146
+  }
+]

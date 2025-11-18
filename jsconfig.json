@@ -1,0 +1,10 @@
+// jsconfig.json (in your project root directory)
+{
+  "compilerOptions": {
+    "baseUrl": "./src", 
+    "paths": {
+      // This tells Next.js/Webpack that any path starting with @/ should look inside the src directory
+      "@/*": ["./*"] 
+    }
+  }
+}
