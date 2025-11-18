@@ -23,7 +23,17 @@ export async function GET(request) {
     const page = searchParams.get('page') || '1';
     const perPage = searchParams.get('per_page') || '20'; // Increased default from 10 to 20
     
-    const apiUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/wp-json/dokan/v1/products?page=${page}&per_page=${perPage}`;
+    // Use multiple fallbacks for the base URL
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+                    process.env.NEXT_PUBLIC_WORDPRESS_URL || 
+                    process.env.NEXT_PUBLIC_WC_API_BASE_URL?.replace('/wp-json/dokan/v1', '') ||
+                    'https://shopwice.com';
+    
+    const apiUrl = `${baseUrl}/wp-json/dokan/v1/products?page=${page}&per_page=${perPage}`;
+    
+    // Debug logging for production
+    console.log('Products API - Base URL:', baseUrl);
+    console.log('Products API - Full URL:', apiUrl);
 
     // Add timeout to prevent hanging
     const controller = new AbortController();
