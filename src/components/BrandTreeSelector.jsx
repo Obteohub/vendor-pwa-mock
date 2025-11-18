@@ -2,117 +2,54 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { ChevronRight, ChevronLeft, Search, Loader2, X, Tag } from 'lucide-react';
+import { Search, Loader2, X, Tag, ChevronRight, ChevronLeft } from 'lucide-react';
 
 export default function BrandTreeSelector({ 
   selectedIds = [], 
   onChange, 
   label = "Brands",
-  brandTree = [] // Receive pre-computed brand tree from parent
+  brandTree = [] // Receive brands from parent
 }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-  const [navigationStack, setNavigationStack] = useState([]);
   const [currentView, setCurrentView] = useState(null);
+  const [navigationStack, setNavigationStack] = useState([]);
 
-  // Use provided brand tree (already pre-computed)
-  const brands = brandTree;
+  // Flatten brand tree to simple list and create a map
+  const { brands, brandMap } = useMemo(() => {
+    const flattenBrands = (brandList, result = [], map = new Map()) => {
+      brandList.forEach(brand => {
+        result.push(brand);
+        map.set(brand.id, brand);
+        if (brand.children && brand.children.length > 0) {
+          flattenBrands(brand.children, result, map);
+        }
+      });
+      return { result, map };
+    };
+    const { result, map } = flattenBrands(brandTree);
+    return { brands: result, brandMap: map };
+  }, [brandTree]);
+
   const loading = brands.length === 0;
 
-  const loadBrands = async () => {
-    // No longer needed - brands come from parent
-    // Kept for compatibility
-  };
-
-  const getBrandById = (id, brandList = brands) => {
-    for (const brand of brandList) {
-      if (brand.id === id) return brand;
-      if (brand.children && brand.children.length > 0) {
-        const found = getBrandById(id, brand.children);
-        if (found) return found;
-      }
+  // Get current brands to display (either root or children of current view)
+  const currentBrands = useMemo(() => {
+    if (searchTerm.trim()) {
+      // When searching, show flat filtered list
+      return brands.filter(brand =>
+        brand.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
-    return null;
-  };
-
-  const getAllBrandIds = (brandList = brands) => {
-    let ids = [];
-    brandList.forEach(brand => {
-      ids.push(brand.id);
-      if (brand.children && brand.children.length > 0) {
-        ids = ids.concat(getAllBrandIds(brand.children));
-      }
-    });
-    return ids;
-  };
-
-  const flattenBrands = (brandList = brands, result = []) => {
-    brandList.forEach(brand => {
-      result.push(brand);
-      if (brand.children && brand.children.length > 0) {
-        flattenBrands(brand.children, result);
-      }
-    });
-    return result;
-  };
-
-  const handleBrandClick = (brand) => {
-    if (brand.children && brand.children.length > 0) {
-      // Navigate into subcategory
-      setNavigationStack([...navigationStack, currentView]);
-      setCurrentView(brand);
-      setSearchTerm('');
-    } else {
-      // Toggle selection
-      const newSelected = selectedIds.includes(brand.id)
-        ? selectedIds.filter(id => id !== brand.id)
-        : [...selectedIds, brand.id];
-      onChange(newSelected);
+    
+    // Show hierarchical view
+    if (currentView) {
+      return currentView.children || [];
     }
-  };
+    return brandTree; // Root level brands
+  }, [searchTerm, brands, brandTree, currentView]);
 
-  const handleBack = () => {
-    const newStack = [...navigationStack];
-    const previous = newStack.pop();
-    setNavigationStack(newStack);
-    setCurrentView(previous);
-    setSearchTerm('');
-  };
-
-  const handleRemoveBrand = (brandId) => {
-    onChange(selectedIds.filter(id => id !== brandId));
-  };
-
-  const selectedBrandNames = useMemo(() => {
-    return selectedIds.map(id => {
-      const brand = getBrandById(id);
-      return brand ? brand.name : `Brand ${id}`;
-    });
-  }, [selectedIds, brands]);
-
-  const filteredBrands = useMemo(() => {
-    if (!searchTerm.trim()) {
-      return currentView ? currentView.children : brands;
-    }
-
-    const allBrands = flattenBrands();
-    return allBrands.filter(brand =>
-      brand.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm, brands, currentView]);
-
-  if (loading) {
-    return (
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">{label}</label>
-        <div className="flex items-center justify-center p-8 border border-gray-200 rounded-lg bg-gray-50">
-          <Loader2 className="w-5 h-5 animate-spin text-indigo-600 mr-2" />
-          <span className="text-sm text-gray-600">Loading brands...</span>
-        </div>
-      </div>
-    );
-  }
-
+  // Navigate into a brand's children
   const navigateInto = (brand) => {
     if (brand.children && brand.children.length > 0) {
       setNavigationStack([...navigationStack, currentView]);
@@ -131,28 +68,10 @@ export default function BrandTreeSelector({
 
   // Toggle brand selection
   const toggleBrand = (brandId) => {
-    const newSelected = new Set(selectedIds);
-    
-    if (newSelected.has(brandId)) {
-      // Deselect
-      newSelected.delete(brandId);
-    } else {
-      // Select: add this brand AND all its parent brands
-      newSelected.add(brandId);
-      
-      // Find and add all parent brands
-      const brand = brandMap.get(brandId);
-      if (brand) {
-        let parentId = brand.parent;
-        while (parentId) {
-          newSelected.add(parentId);
-          const parent = brandMap.get(parentId);
-          parentId = parent?.parent;
-        }
-      }
-    }
-
-    onChange(Array.from(newSelected));
+    const newSelected = selectedIds.includes(brandId)
+      ? selectedIds.filter(id => id !== brandId)
+      : [...selectedIds, brandId];
+    onChange(newSelected);
   };
 
   // Get selected brand names
@@ -170,6 +89,18 @@ export default function BrandTreeSelector({
     setNavigationStack([]);
     setSearchTerm('');
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700">{label}</label>
+        <div className="flex items-center justify-center p-8 border border-gray-200 rounded-lg bg-gray-50">
+          <Loader2 className="w-5 h-5 animate-spin text-indigo-600 mr-2" />
+          <span className="text-sm text-gray-600">Loading brands...</span>
+        </div>
+      </div>
+    );
+  }
 
   // Memoized brand item component
   const BrandItem = React.memo(({ brand }) => {
@@ -193,6 +124,11 @@ export default function BrandTreeSelector({
             <span className="text-sm font-medium text-gray-900 truncate block">
               {brand.name}
             </span>
+            {hasChildren && (
+              <span className="text-xs text-gray-500">
+                {brand.children.length} sub-brand{brand.children.length !== 1 ? 's' : ''}
+              </span>
+            )}
           </button>
         </div>
         {hasChildren && (
