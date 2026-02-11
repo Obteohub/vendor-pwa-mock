@@ -2,7 +2,7 @@
 // IndexedDB wrapper for storing WooCommerce data locally
 
 const DB_NAME = 'VendorAppDB';
-const DB_VERSION = 2; // Increment version for new stores
+const DB_VERSION = 3; // Increment version for new stores
 const STORES = {
   CATEGORIES: 'categories',
   BRANDS: 'brands',
@@ -82,8 +82,17 @@ class LocalDataStore {
 
   // Save multiple items to a store
   async saveAll(storeName, items) {
+    if (!items || !Array.isArray(items)) {
+      console.warn(`[LocalDataStore] saveAll called with invalid items for ${storeName}`, items);
+      return;
+    }
+    
     await this.init();
     return new Promise((resolve, reject) => {
+      if (!this.db) {
+        reject(new Error("Database not initialized"));
+        return;
+      }
       const transaction = this.db.transaction(storeName, 'readwrite');
       const store = transaction.objectStore(storeName);
 
@@ -91,7 +100,9 @@ class LocalDataStore {
       store.clear();
 
       // Add new data
-      items.forEach(item => store.add(item));
+      items.forEach(item => {
+        if (item) store.add(item);
+      });
 
       transaction.oncomplete = () => resolve();
       transaction.onerror = () => reject(transaction.error);

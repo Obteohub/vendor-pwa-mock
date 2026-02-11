@@ -1,0 +1,215 @@
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   .env.production
+	modified:   .env.production.example
+	deleted:    API_FIX_SUMMARY.md
+	deleted:    API_SUBDOMAIN_CHECKLIST.md
+	deleted:    AUTO_UPDATE_GUIDE.md
+	deleted:    BACKGROUND_LOADING_FIX.md
+	deleted:    CATEGORY_ATTRIBUTES_GUIDE.md
+	deleted:    CATEGORY_ATTRIBUTES_IMPLEMENTATION.md
+	deleted:    CATEGORY_MAPPING_BEST_PRACTICES.md
+	deleted:    CATEGORY_PERFORMANCE_OPTIMIZATIONS.md
+	deleted:    CLOUDFLARE_COMPLETE_BYPASS.md
+	deleted:    CLOUDFLARE_CONFIGURATION_RULE.md
+	deleted:    CLOUDFLARE_FINAL_SOLUTION.md
+	deleted:    CLOUDFLARE_FREE_PLAN_SOLUTION.md
+	deleted:    CLOUDFLARE_TROUBLESHOOTING.md
+	deleted:    CLOUDFLARE_VERCEL_SETUP.md
+	deleted:    COMPLETE_SETUP_SUMMARY.md
+	deleted:    CURRENT_IMPLEMENTATION.md
+	deleted:    DEBUG_AUTH_ISSUE.md
+	deleted:    DEPLOYMENT_CHECKLIST.md
+	deleted:    DEPLOYMENT_GUIDE.md
+	deleted:    DEPLOY_STATIC_JSON.md
+	deleted:    DEVELOPMENT_ROADMAP.md
+	deleted:    DEV_WORKFLOW.md
+	deleted:    FEATURES_IMPLEMENTED.md
+	deleted:    FEATURE_CATEGORY_ATTRIBUTES.md
+	deleted:    FINAL_FIX_API_SUBDOMAIN.md
+	deleted:    FINAL_IMPLEMENTATION.md
+	deleted:    GITHUB_SETUP.md
+	deleted:    HOW_TO_ADD_MAPPINGS.md
+	deleted:    IMPLEMENTATION_COMPLETE.md
+	deleted:    IMPLEMENTATION_SUMMARY.md
+	deleted:    INDEPENDENT_SYNC_COMPLETE.md
+	deleted:    JSON_FILES_STATUS.md
+	deleted:    LOCAL_DATA_IMPLEMENTATION_COMPLETE.md
+	deleted:    LOCAL_DATA_STORE_GUIDE.md
+	deleted:    LOCAL_JSON_FILES_COMPLETE.md
+	deleted:    MAINTENANCE_GUIDE.md
+	deleted:    MAPPINGS_COMPLETE_GUIDE.md
+	deleted:    NEW_COMPONENTS_IMPLEMENTED.md
+	deleted:    NEXT_IMPROVEMENTS_PLAN.md
+	deleted:    NGINX_403_FIX.md
+	deleted:    NGINX_ALLOW_VERCEL_IPS.md
+	deleted:    ORGANIZED_MAPPINGS_GUIDE.md
+	deleted:    PATH_UPDATED.md
+	deleted:    POLISH_IMPROVEMENTS.md
+	deleted:    PRE_COMPUTED_DATA_COMPLETE.md
+	deleted:    PRODUCT_FORM_REORGANIZATION.md
+	deleted:    PUSH_TO_GITHUB.md
+	deleted:    QUICK_DEPLOY.md
+	deleted:    QUICK_REFERENCE_STATIC_JSON.md
+	deleted:    QUICK_START.md
+	deleted:    QUICK_START_RESILIENCE.md
+	modified:   README.md
+	modified:   README_DEPLOYMENT.md
+	deleted:    RESILIENCE.md
+	deleted:    RESILIENCE_FLOW.md
+	deleted:    SEQUENTIAL_LOADING.md
+	deleted:    SERVER_OPTIMIZATION.md
+	deleted:    SESSION_COMPLETE.md
+	deleted:    SESSION_SUMMARY.md
+	deleted:    SKIP_UNMAPPED_CATEGORIES.md
+	deleted:    SSL_REDIRECT_FIX.md
+	deleted:    STATIC_JSON_BENEFITS.md
+	deleted:    STATIC_JSON_IMPLEMENTATION_COMPLETE.md
+	deleted:    STATIC_JSON_SETUP.md
+	deleted:    WEEKLY_AUTO_UPDATE_COMPLETE.md
+	deleted:    generate-static-data.php
+	deleted:    inspect-all-files.js
+	deleted:    inspect-json-files.js
+	modified:   jsconfig.json
+	modified:   package-lock.json
+	modified:   package.json
+	modified:   public/data/attributes.json
+	modified:   public/manifest.json
+	modified:   public/sw.js
+	deleted:    setup-github.md
+	modified:   src/app/api/auth/check/route.js
+	modified:   src/app/api/auth/login/route.js
+	modified:   src/app/api/auth/logout/route.js
+	deleted:    src/app/api/logout.js
+	deleted:    src/app/api/products/route.js
+	deleted:    src/app/api/route.js
+	deleted:    src/app/api/user.js
+	deleted:    src/app/api/vendor/attributes/[id]/terms/route.js
+	deleted:    src/app/api/vendor/attributes/route.js
+	deleted:    src/app/api/vendor/brands/route.js
+	deleted:    src/app/api/vendor/brands/tree/route.js
+	deleted:    src/app/api/vendor/categories/[id]/attributes/route.js
+	deleted:    src/app/api/vendor/categories/route.js
+	deleted:    src/app/api/vendor/categories/tree/route.js
+	modified:   src/app/api/vendor/dashboard/stats/route.js
+	deleted:    src/app/api/vendor/data.js
+	deleted:    src/app/api/vendor/locations/route.js
+	modified:   src/app/api/vendor/media/route.js
+	modified:   src/app/api/vendor/notifications/route.js
+	modified:   src/app/api/vendor/orders/[id]/route.js
+	modified:   src/app/api/vendor/orders/[id]/status/route.js
+	modified:   src/app/api/vendor/orders/route.js
+	deleted:    src/app/api/vendor/products.js
+	modified:   src/app/api/vendor/products/[id]/route.js
+	modified:   src/app/api/vendor/products/route.js
+	deleted:    src/app/api/vendor/store.js
+	modified:   src/app/dashboard/layout.jsx
+	modified:   src/app/dashboard/orders/[id]/page.jsx
+	modified:   src/app/dashboard/orders/page.jsx
+	modified:   src/app/dashboard/page.jsx
+	deleted:    src/app/dashboard/products/[id]/ProductEditForm.jsx
+	deleted:    src/app/dashboard/products/[id]/page.jsx
+	modified:   src/app/dashboard/products/add/page.jsx
+	modified:   src/app/dashboard/products/edit/[id]/page.jsx
+	modified:   src/app/dashboard/products/page.jsx
+	modified:   src/app/dashboard/settings/page.jsx
+	deleted:    src/app/dashboard/store/page.jsx
+	modified:   src/app/globals.css
+	modified:   src/app/layout.jsx
+	modified:   src/app/login/page.jsx
+	modified:   src/app/page.jsx
+	modified:   src/components/AttributeSelector.jsx
+	modified:   src/components/BrandTreeSelector.jsx
+	modified:   src/components/CategoryTreeSelector.jsx
+	modified:   src/components/HierarchicalSelector.jsx
+	modified:   src/components/NotificationCenter.jsx
+	deleted:    src/config/attributeMappings/README.md
+	deleted:    src/config/attributeMappings/_template.js
+	deleted:    src/config/attributeMappings/automotive.js
+	deleted:    src/config/attributeMappings/booksMedia.js
+	deleted:    src/config/attributeMappings/electronics.js
+	deleted:    src/config/attributeMappings/fashion.js
+	deleted:    src/config/attributeMappings/gardenOutdoor.js
+	deleted:    src/config/attributeMappings/groceryFood.js
+	deleted:    src/config/attributeMappings/healthBeauty.js
+	deleted:    src/config/attributeMappings/healthWellness.js
+	deleted:    src/config/attributeMappings/homeAppliances.js
+	deleted:    src/config/attributeMappings/homeGarden.js
+	deleted:    src/config/attributeMappings/petSupplies.js
+	deleted:    src/config/attributeMappings/sportsFitness.js
+	deleted:    src/config/attributeMappings/stationeryOffice.js
+	deleted:    src/config/attributeMappings/toysBaby.js
+	deleted:    src/config/categoryAttributeMap.js
+	modified:   src/hooks/useLocalData.js
+	modified:   src/lib/apiClient.js
+	modified:   src/lib/auth.js
+	modified:   src/lib/localDataStore.js
+	modified:   tailwind.config.js
+	deleted:    test-json-files.js
+	modified:   vercel.json
+	deleted:    wp-cron-setup.php
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	README_PERFORMANCE.md
+	WIKI.md
+	docs/
+	git_status.txt
+	next.config.js
+	processes.txt
+	public/icon.svg
+	scripts/
+	src/app/api/attributes/
+	src/app/api/auth/register/
+	src/app/api/auth/reset-password/
+	src/app/api/brands/
+	src/app/api/categories/
+	src/app/api/locations/
+	src/app/api/vendor/[id]/
+	src/app/api/vendor/account/
+	src/app/api/vendor/list/
+	src/app/api/vendor/products/[id]/quick-update/
+	src/app/api/vendor/products/quick-submit/
+	src/app/api/wcfm/
+	src/app/dashboard/loading.jsx
+	src/app/icon-192.png
+	src/app/icon-512.png
+	src/app/login/layout.jsx
+	src/app/login/loading.jsx
+	src/app/register/
+	src/app/reset-password/
+	src/app/test-wcfm-proxy/
+	src/components/AttributeSelectorLocal.jsx
+	src/components/LoadingDots.jsx
+	src/components/PWAInstallPrompt.jsx
+	src/components/PageLoadingIndicator.jsx
+	src/components/ProtectedRoute.jsx
+	src/components/RichTextEditor.css
+	src/components/RichTextEditor.jsx
+	src/components/StoreBrandingCard.jsx
+	src/components/UploadStatus.jsx
+	src/components/UserProfile.jsx
+	src/components/attributeMappings/
+	src/hooks/categoryAttributeMap.js
+	src/hooks/useAuth.js
+	src/hooks/useCollapsibleAttributes.js
+	src/lib/AUTHENTICATION_GUIDE.md
+	src/lib/AUTH_QUICK_REFERENCE.md
+	src/lib/attributeDerivation.js
+	src/lib/axiosClient.js
+	src/lib/backend-client.js
+	src/lib/imageValidator.js
+	src/lib/uploadQueue.js
+	src/lib/wcfmClient.js
+	src/store/
+	test-products.html
+	test_headers.mjs
+	test_vendor_login.sh
+	wordpress-vendor-api-plugin.php
+	wp-config-corrected.php
+
+no changes added to commit (use "git add" and/or "git commit -a")

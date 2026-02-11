@@ -2,61 +2,52 @@
 // Fetch vendor notifications
 
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-
-const WC_API_URL = process.env.NEXT_PUBLIC_WC_API_BASE_URL;
-
+import { backendFetch } from '@/lib/backend-client';
 
 export async function GET(request) {
     try {
-        const cookieStore = await cookies();
-        const authToken = cookieStore.get('sw_token')?.value;
-
-        if (!authToken) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
-        }
-
         const { searchParams } = new URL(request.url);
         const unreadOnly = searchParams.get('unread') === 'true';
 
-        // Fetch recent orders for notifications
-        const ordersRes = await fetch(`${WC_API_URL}/orders?per_page=10&orderby=date&order=desc`, {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${authToken}`,
+        // Fetch recent orders via middleware
+        console.log('[NOTIFICATIONS] Fetching recent orders via backendFetch...');
+        const ordersRes = await backendFetch('vendor/orders', {
+            params: {
+                per_page: 20
             },
-            cache: 'no-store',
+            cache: 'no-store'
         });
 
         const notifications = [];
 
         if (ordersRes.ok) {
             const orders = await ordersRes.json();
-            
+
             // Create notifications for recent orders (last 24 hours)
             const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-            
-            orders.forEach(order => {
-                const orderDate = new Date(order.date_created);
-                if (orderDate > oneDayAgo) {
-                    notifications.push({
-                        id: `order-${order.id}`,
-                        type: 'order',
-                        title: 'New Order Received',
-                        message: `Order #${order.id} - GH₵${order.total}`,
-                        timestamp: order.date_created,
-                        read: false,
-                        link: `/dashboard/orders/${order.id}`,
-                        icon: 'shopping-cart'
-                    });
-                }
-            });
+
+            if (Array.isArray(orders)) {
+                orders.forEach(order => {
+                    const orderDate = new Date(order.date_created || order.date);
+                    if (orderDate > oneDayAgo) {
+                        notifications.push({
+                            id: `order-${order.id}`,
+                            type: 'order',
+                            title: 'New Order Received',
+                            message: `Order #${order.id} - GH₵${order.total}`,
+                            timestamp: order.date_created || order.date,
+                            read: false,
+                            link: `/dashboard/orders/${order.id}`,
+                            icon: 'shopping-cart'
+                        });
+                    }
+                });
+            }
+        } else {
+            console.error('[NOTIFICATIONS] Orders fetch failed:', ordersRes.status);
         }
 
-        // Add sample admin announcements (in production, fetch from database)
+        // Add sample admin announcements
         const announcements = [
             {
                 id: 'announcement-1',
@@ -86,7 +77,7 @@ export async function GET(request) {
         notifications.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
         // Filter unread if requested
-        const filteredNotifications = unreadOnly 
+        const filteredNotifications = unreadOnly
             ? notifications.filter(n => !n.read)
             : notifications;
 
@@ -108,26 +99,13 @@ export async function GET(request) {
 // Mark notification as read
 export async function PUT(request) {
     try {
-        const cookieStore = await cookies();
-        const authToken = cookieStore.get('sw_token')?.value;
-
-        if (!authToken) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
-        }
-
         const { notificationId } = await request.json();
-
-        // In production, update database
         console.log(`Marking notification ${notificationId} as read`);
 
         return NextResponse.json(
             { message: 'Notification marked as read' },
             { status: 200 }
         );
-
     } catch (error) {
         console.error('Error marking notification as read:', error);
         return NextResponse.json(
@@ -136,4 +114,3 @@ export async function PUT(request) {
         );
     }
 }
-

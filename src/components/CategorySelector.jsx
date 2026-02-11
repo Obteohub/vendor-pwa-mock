@@ -1,4 +1,3 @@
-// src/components/CategorySelector.jsx
 "use client";
 
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
@@ -12,160 +11,103 @@ import { ChevronRight, ChevronDown, Search, Loader2, X } from 'lucide-react';
  * - Auto-select parent categories
  * - Virtual scrolling for performance
  */
-export default function CategorySelector({ 
-  selectedIds = [], 
-  onChange, 
-  label, 
-  placeholder = "Search and select categories..." 
+function CategorySelector({
+  selectedIds = [],
+  onChange,
+  label,
+  placeholder = "Search and select categories...",
+  categories = [] // New prop: pre-loaded categories
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [expandedIds, setExpandedIds] = useState(new Set());
   const [searchQuery, setSearchQuery] = useState('');
-  const [allCategories, setAllCategories] = useState([]); // All loaded categories (flat)
+  const [allCategories, setAllCategories] = useState(categories); // Initialize with props
   const [loading, setLoading] = useState(false);
-  const [loadingChildren, setLoadingChildren] = useState(new Set());
-  const [hasMore, setHasMore] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [loadedChildren, setLoadedChildren] = useState(new Set()); // Track which categories have children loaded
   const scrollContainerRef = useRef(null);
-  const observerRef = useRef(null);
-  const sentinelRef = useRef(null);
+  const isFetchingRef = useRef(false);
 
-  const perPage = 50;
+  // Update allCategories when categories prop changes
+  useEffect(() => {
+    if (categories && categories.length > 0) {
+      setAllCategories(categories);
+    }
+  }, [categories]);
 
-  // Fetch root categories from API with pagination
-  const fetchCategories = useCallback(async (page = 1, append = false) => {
-    if (loading && !append) return;
+  // Fetch all categories recursively
+  const fetchAllCategories = useCallback(async () => {
+    // If we have categories from props, don't fetch unless we want to refresh
+    // For now, assume props are sufficient if provided
+    if (categories.length > 0) return;
     
+    if (isFetchingRef.current) return;
+
+    isFetchingRef.current = true;
     setLoading(true);
     try {
-      const response = await fetch(`/api/vendor/categories?page=${page}&per_page=${perPage}`, {
-        method: 'GET',
-        credentials: 'include',
-      });
+      let allFetched = [];
+      let page = 1;
+      let hasNext = true;
+      const limit = 100; // Increase perPage to reduce requests
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch categories: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const newCategories = data.categories || [];
-      
-      if (append) {
-        setAllCategories(prev => {
-          const existingIds = new Set(prev.map(c => c.id));
-          const unique = newCategories.filter(c => !existingIds.has(c.id));
-          return [...prev, ...unique];
+      while (hasNext) {
+        const response = await fetch(`/api/vendor/categories?page=${page}&per_page=${limit}`, {
+          method: 'GET',
+          credentials: 'include',
         });
-      } else {
-        setAllCategories(newCategories);
+
+        if (!response.ok) {
+          console.error(`Failed to fetch categories page ${page}`);
+          break;
+        }
+
+        const data = await response.json();
+        const items = Array.isArray(data) ? data : (data.categories || data.data || []);
+
+        if (items.length === 0) {
+            hasNext = false;
+            break;
+        }
+
+        allFetched = [...allFetched, ...items];
+
+        if (items.length < limit) {
+          hasNext = false;
+        } else {
+          page++;
+        }
       }
-      
-      setHasMore(data.has_more || false);
-      setCurrentPage(page);
+
+      // Deduplicate categories based on ID
+      const uniqueMap = new Map();
+      allFetched.forEach(item => uniqueMap.set(item.id, item));
+      setAllCategories(Array.from(uniqueMap.values()));
+
     } catch (error) {
       console.error('Error fetching categories:', error);
     } finally {
       setLoading(false);
+      isFetchingRef.current = false;
     }
-  }, [loading]);
+  }, [categories]);
 
-  // Load children of a category on demand
-  const loadChildren = useCallback(async (categoryId) => {
-    if (loadingChildren.has(categoryId) || loadedChildren.has(categoryId)) return;
-    
-    setLoadingChildren(prev => new Set(prev).add(categoryId));
-    try {
-      const response = await fetch(`/api/vendor/categories?parent=${categoryId}&per_page=100`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const children = data.categories || [];
-        
-        // Add children to allCategories if not already there
-        setAllCategories(prev => {
-          const existingIds = new Set(prev.map(c => c.id));
-          const unique = children.filter(c => !existingIds.has(c.id));
-          return [...prev, ...unique];
-        });
-        
-        setLoadedChildren(prev => new Set(prev).add(categoryId));
-      }
-    } catch (error) {
-      console.error(`Error loading children for category ${categoryId}:`, error);
-    } finally {
-      setLoadingChildren(prev => {
-        const updated = new Set(prev);
-        updated.delete(categoryId);
-        return updated;
-      });
-    }
-  }, [loadingChildren, loadedChildren]);
-
-  // Initial load
+  // Initial load when opened
   useEffect(() => {
     if (isOpen && allCategories.length === 0) {
-      fetchCategories(1, false);
+      fetchAllCategories();
     }
-  }, [isOpen, allCategories.length, fetchCategories]);
-
-  // Infinite scroll observer
-  useEffect(() => {
-    if (!isOpen || !hasMore || loading) return;
-
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    // Clean up previous observer
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-    }
-    if (sentinelRef.current && sentinelRef.current.parentNode) {
-      sentinelRef.current.parentNode.removeChild(sentinelRef.current);
-    }
-
-    // Create sentinel element
-    const sentinel = document.createElement('div');
-    sentinel.style.height = '20px';
-    sentinel.style.width = '100%';
-    sentinelRef.current = sentinel;
-    container.appendChild(sentinel);
-
-    // Create observer
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading) {
-          fetchCategories(currentPage + 1, true);
-        }
-      },
-      { threshold: 0.1, root: container }
-    );
-
-    observerRef.current.observe(sentinel);
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-      if (sentinelRef.current && sentinelRef.current.parentNode) {
-        sentinelRef.current.parentNode.removeChild(sentinelRef.current);
-      }
-    };
-  }, [isOpen, hasMore, loading, currentPage, fetchCategories]);
+  }, [isOpen, allCategories.length, fetchAllCategories]);
 
   // Build parent chain map for all loaded categories
   const parentChainMap = useMemo(() => {
     const map = new Map();
-    
+
     allCategories.forEach(cat => {
       const chain = [];
       let current = cat;
       let depth = 0;
-      
-      while (current && current.parent && depth < 10) {
+
+      // Increased depth limit from 10 to 100 to support deep nesting
+      while (current && current.parent && depth < 100) {
         const parent = allCategories.find(c => c.id === current.parent);
         if (parent) {
           chain.unshift(parent.id);
@@ -175,10 +117,10 @@ export default function CategorySelector({
           break;
         }
       }
-      
+
       map.set(cat.id, chain);
     });
-    
+
     return map;
   }, [allCategories]);
 
@@ -187,33 +129,27 @@ export default function CategorySelector({
     if (!searchQuery.trim()) {
       return allCategories;
     }
-    
+
     const query = searchQuery.toLowerCase();
-    return allCategories.filter(cat => 
+    return allCategories.filter(cat =>
       cat.name.toLowerCase().includes(query)
     );
   }, [allCategories, searchQuery]);
 
-  // Build tree structure from filtered categories with lazy loading support
+  // Build tree structure from filtered categories
   const tree = useMemo(() => {
     const buildTree = (parentId = 0, level = 0) => {
       return filteredCategories
         .filter(item => item.parent === parentId)
         .sort((a, b) => a.name.localeCompare(b.name))
         .map(item => {
-          // Check if this category has children loaded
-          const hasLoadedChildren = loadedChildren.has(item.id);
           // Check if there are children in the current filtered set
           const childrenInSet = filteredCategories.filter(c => c.parent === item.id);
-          
-          // For 711 categories, we show expand icon for all categories
-          // They might have children that we haven't loaded yet
-          // Only hide expand icon if we've loaded children and found none
-          const hasChildren = childrenInSet.length > 0 || !hasLoadedChildren;
-          
-          // Get children (from filtered set if available)
-          const children = childrenInSet.length > 0 ? buildTree(item.id, level + 1) : [];
-          
+          const hasChildren = childrenInSet.length > 0;
+
+          // Recursively build children
+          const children = hasChildren ? buildTree(item.id, level + 1) : [];
+
           return {
             ...item,
             level,
@@ -224,32 +160,28 @@ export default function CategorySelector({
         });
     };
     return buildTree();
-  }, [filteredCategories, loadedChildren]);
+  }, [filteredCategories]);
 
-  // Toggle expand/collapse with lazy loading
+  // Toggle expand/collapse
   const toggleExpand = useCallback((id) => {
     const newExpanded = new Set(expandedIds);
     if (newExpanded.has(id)) {
       newExpanded.delete(id);
     } else {
       newExpanded.add(id);
-      // Lazy load children if not already loaded
-      if (!loadedChildren.has(id)) {
-        loadChildren(id);
-      }
     }
     setExpandedIds(newExpanded);
-  }, [expandedIds, loadedChildren, loadChildren]);
+  }, [expandedIds]);
 
   // Toggle selection with auto-select parents
   const toggleSelect = useCallback((id) => {
     const parentChain = parentChainMap.get(id) || [];
     const isCurrentlySelected = selectedIds.includes(id);
-    
+
     if (isCurrentlySelected) {
       // Deselect this and all its children
       const toRemove = new Set([id]);
-      
+
       // Find all descendants
       const findDescendants = (parentId) => {
         allCategories.forEach(cat => {
@@ -260,19 +192,19 @@ export default function CategorySelector({
         });
       };
       findDescendants(id);
-      
+
       onChange(selectedIds.filter(sid => !toRemove.has(sid)));
     } else {
       // Select this and all parents
       const newSelected = [...selectedIds];
       const allIdsToAdd = [id, ...parentChain];
-      
+
       allIdsToAdd.forEach(pid => {
         if (!newSelected.includes(pid)) {
           newSelected.push(pid);
         }
       });
-      
+
       onChange(newSelected);
     }
   }, [selectedIds, onChange, parentChainMap, allCategories]);
@@ -281,13 +213,12 @@ export default function CategorySelector({
   const renderTreeItem = useCallback((item, level = 0) => {
     const isExpanded = expandedIds.has(item.id);
     const isSelected = selectedIds.includes(item.id);
-    const isLoadingChildren = loadingChildren.has(item.id);
     const hasChildren = item.hasChildren || false;
     const children = item.children || [];
 
     return (
       <div key={item.id}>
-        <div 
+        <div
           className="flex items-center py-2 px-2 hover:bg-gray-50 rounded cursor-pointer transition-colors"
           style={{ paddingLeft: `${level * 20 + 8}px` }}
         >
@@ -300,11 +231,8 @@ export default function CategorySelector({
                 toggleExpand(item.id);
               }}
               className="mr-2 text-gray-500 hover:text-gray-700 focus:outline-none flex-shrink-0"
-              disabled={isLoadingChildren}
             >
-              {isLoadingChildren ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : isExpanded ? (
+              {isExpanded ? (
                 <ChevronDown className="w-4 h-4" />
               ) : (
                 <ChevronRight className="w-4 h-4" />
@@ -345,19 +273,14 @@ export default function CategorySelector({
         {/* Render children if expanded */}
         {hasChildren && isExpanded && (
           <div>
-            {isLoadingChildren ? (
-              <div className="py-2 px-2 flex items-center" style={{ paddingLeft: `${(level + 1) * 20 + 8}px` }}>
-                <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
-                <span className="ml-2 text-xs text-gray-500">Loading...</span>
-              </div>
-            ) : children.length > 0 ? (
+            {children.length > 0 ? (
               children.map(child => renderTreeItem(child, level + 1))
             ) : null}
           </div>
         )}
       </div>
     );
-  }, [expandedIds, selectedIds, loadingChildren, toggleExpand, toggleSelect]);
+  }, [expandedIds, selectedIds, toggleExpand, toggleSelect]);
 
   // Get selected items names for display
   const selectedNames = useMemo(() => {
@@ -368,7 +291,7 @@ export default function CategorySelector({
         return cat ? cat.name : null;
       })
       .filter(Boolean);
-    
+
     if (names.length > 3) {
       return `${names.slice(0, 3).join(', ')} +${names.length - 3} more`;
     }
@@ -406,19 +329,31 @@ export default function CategorySelector({
         )}
       </div>
 
-      {/* Dropdown panel */}
+      {/* Dropdown panel - Full screen on mobile, dropdown on desktop */}
       {isOpen && (
         <>
           {/* Backdrop */}
           <div
-            className="fixed inset-0 z-10"
+            className="fixed inset-0 z-40 bg-black/50"
             onClick={() => setIsOpen(false)}
           />
 
-          {/* Dropdown content */}
-          <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-xl flex flex-col" style={{ maxHeight: '500px' }}>
+          {/* Modal Content */}
+          <div className="fixed inset-0 z-[100] bg-white sm:absolute sm:inset-auto sm:top-full sm:left-0 sm:mt-1 sm:w-full sm:rounded-lg sm:shadow-xl sm:h-auto sm:max-h-[500px] flex flex-col animate-in fade-in zoom-in-95 duration-200 sm:z-50">
+            {/* Header (Mobile only) */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 sm:hidden">
+              <h3 className="text-lg font-semibold text-gray-900">{label || 'Select Categories'}</h3>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="p-2 -mr-2 text-gray-500 hover:bg-gray-100 rounded-full"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
             {/* Search bar */}
-            <div className="p-3 border-b border-gray-200 sticky top-0 bg-white z-10">
+            <div className="p-3 border-b border-gray-200 bg-white">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
@@ -427,7 +362,6 @@ export default function CategorySelector({
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search categories..."
                   className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                  onClick={(e) => e.stopPropagation()}
                   autoFocus
                 />
                 {searchQuery && (
@@ -441,17 +375,26 @@ export default function CategorySelector({
                 )}
               </div>
               {selectedIds.length > 0 && (
-                <div className="mt-2 text-xs text-gray-600">
-                  {selectedIds.length} categor{selectedIds.length === 1 ? 'y' : 'ies'} selected
+                <div className="mt-2 flex items-center justify-between">
+                  <div className="text-xs text-gray-600">
+                    {selectedIds.length} categor{selectedIds.length === 1 ? 'y' : 'ies'} selected
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onChange([])}
+                    className="text-xs text-red-600 hover:text-red-700 font-medium"
+                  >
+                    Clear All
+                  </button>
                 </div>
               )}
             </div>
 
             {/* Categories list with virtualization */}
-            <div 
+            <div
               ref={scrollContainerRef}
-              className="overflow-y-auto flex-1 p-2"
-              style={{ maxHeight: '400px' }}
+              className="overflow-y-auto flex-1 p-2 bg-gray-50 sm:bg-white"
+              style={{ maxHeight: 'none' }} // Override inline style for mobile
             >
               {loading && allCategories.length === 0 ? (
                 <div className="flex items-center justify-center py-8">
@@ -459,32 +402,31 @@ export default function CategorySelector({
                   <span className="ml-2 text-sm text-gray-600">Loading categories...</span>
                 </div>
               ) : tree.length > 0 ? (
-                <>
+                <div className="space-y-1">
                   {tree.map(item => renderTreeItem(item))}
-                  {hasMore && (
-                    <div className="flex items-center justify-center py-4">
-                      {loading ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
-                          <span className="ml-2 text-xs text-gray-500">Loading more...</span>
-                        </>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => fetchCategories(currentPage + 1, true)}
-                          className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
-                        >
-                          Load more categories...
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </>
+                </div>
               ) : (
                 <div className="text-sm text-gray-500 text-center py-8">
                   {searchQuery ? `No categories found matching "${searchQuery}"` : 'No categories available'}
                 </div>
               )}
+              {loading && allCategories.length > 0 && (
+                  <div className="flex items-center justify-center py-4">
+                    <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
+                    <span className="ml-2 text-xs text-gray-500">Loading more...</span>
+                  </div>
+              )}
+            </div>
+
+            {/* Footer (Mobile only) */}
+            <div className="p-4 border-t border-gray-200 bg-white sm:hidden pb-safe">
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="w-full py-3 bg-indigo-600 text-white rounded-xl font-semibold shadow-sm"
+              >
+                Done ({selectedIds.length})
+              </button>
             </div>
           </div>
         </>
@@ -492,3 +434,6 @@ export default function CategorySelector({
     </div>
   );
 }
+
+// Memoize the component to prevent re-renders when parent state changes
+export default React.memo(CategorySelector);

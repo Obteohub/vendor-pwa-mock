@@ -1,520 +1,242 @@
+// src/app/api/vendor/products/route.js
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { backendFetch } from '@/lib/backend-client';
 
-// Define the external API base URL for WooCommerce/Dokan
-const WC_API_URL = process.env.NEXT_PUBLIC_WC_API_BASE_URL;
-
-// IMPORTANT: Prevents Next.js from caching the response
 export const dynamic = 'force-dynamic';
 
-export async function POST(request) {
-    // 0. AUTHENTICATION CHECK
-    const cookieStore = await cookies();
-    const authToken = cookieStore.get('sw_token')?.value;
+// In-memory cache for products by user
+const productsCache = new Map();
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
-    if (!authToken) {
-        return NextResponse.json(
-            { error: 'Unauthorized. Missing authentication token.' },
-            { status: 401 }
-        );
+async function fetchAllProducts(token) {
+    console.log('[PRODUCTS] Fetching all products from middleware...');
+    
+    let allProducts = [];
+    let currentPage = 1;
+    let hasMore = true;
+    const maxPages = 100; // Increased safety limit
+
+    while (hasMore && currentPage <= maxPages) {
+        console.log(`[PRODUCTS] Fetching page ${currentPage} for token ${token.substring(0, 10)}...`);
+        const fetchUrl = `vendor/products?per_page=100&page=${currentPage}`;
+        console.log(`[PRODUCTS] Calling backend: ${fetchUrl}`);
+        
+        const res = await backendFetch('vendor/products', {
+            params: {
+                per_page: '100',
+                page: String(currentPage),
+                // status: 'any' is already handled by shopwice_vendor_get_products in shopwice-unified-api.php
+                // but we can pass it anyway just in case.
+                status: 'any',
+                _fields: 'id,name,slug,status,price,regular_price,sale_price,stock_status,stock_quantity,images,date_created,categories,type,sku,image'
+            },
+            cache: 'no-store'
+        });
+
+        console.log(`[PRODUCTS] Backend response status: ${res.status}`);
+
+        if (!res.ok) {
+            const errorText = await res.text().catch(() => 'No error body');
+            console.log(`[PRODUCTS] Page ${currentPage} failed with status ${res.status}: ${errorText.slice(0, 100)}`);
+            break;
+        }
+
+        const data = await res.json();
+        
+        if (data && data.message && !Array.isArray(data)) {
+            console.log(`[PRODUCTS] Backend returned error message: ${data.message}`);
+            // If it's a "no products found" type of message, we should just stop
+            if (data.code === 'woocommerce_rest_cannot_view' || data.code === 'wcfm_rest_cannot_view') {
+                console.log('[PRODUCTS] Permission denied or cannot view products');
+                break;
+            }
+        }
+
+        const products = Array.isArray(data) ? data : (data.products || data.items || data.data || []);
+        
+        console.log(`[PRODUCTS] Page ${currentPage} returned ${products.length} items`);
+        
+        if (products.length === 0) {
+            console.log(`[PRODUCTS] No more products found on page ${currentPage}`);
+            hasMore = false;
+            break;
+        }
+
+        allProducts = [...allProducts, ...products];
+        
+        if (products.length < 100) {
+            hasMore = false;
+        } else {
+            currentPage++;
+            await new Promise(resolve => setTimeout(resolve, 100)); // Gentle delay
+        }
     }
 
+    console.log('[PRODUCTS] Fetched total:', allProducts.length, 'products');
+    return allProducts;
+}
+
+/**
+ * Handle GET requests for product lists through the middleware.
+ */
+export async function GET(request) {
     try {
-        // --- 1. Parse FormData (Required for file uploads) ---
-        const formData = await request.formData();
+        const { searchParams } = new URL(request.url);
+        const requestedPage = parseInt(searchParams.get('page') || '1');
+        const requestedPerPage = parseInt(searchParams.get('per_page') || '20');
+        const forceRefresh = searchParams.get('refresh') === 'true';
 
-        // Extract ALL fields
-        const name = formData.get('name');
-        const productType = formData.get('productType') || 'simple'; // NEW: Get product type
-        
-        // Pricing/Inventory fields (only relevant for simple products on main object)
-        const regular_price = formData.get('regular_price');
-        const stock_quantity = formData.get('stock_quantity');
-        
-        // Extended fields
-        const short_description = formData.get('short_description');
-        const description = formData.get('description');
-        const sku = formData.get('sku');
-        const sale_price = formData.get('sale_price');
-        const sale_start = formData.get('sale_start');
-        const sale_end = formData.get('sale_end');
-        const weight = formData.get('weight');
-        const length = formData.get('length');
-        const width = formData.get('width');
-        const height = formData.get('height');
+        // Extract token
+        const { cookies } = await import('next/headers');
+        const cookieStore = await cookies();
+        const token = cookieStore.get('sw_token')?.value;
+        console.log(`[PRODUCTS GET] Request for page ${requestedPage}, per_page ${requestedPerPage}. Token present: ${!!token}, Force: ${forceRefresh}`);
 
-        // JSON-stringified fields (must be parsed back)
-        const category_ids_json = formData.get('category_ids_json');
-        const brand_ids_json = formData.get('brand_ids_json');
-        const location_ids_json = formData.get('location_ids_json');
-        const attributes_json = formData.get('attributes_json');
-        const variations_json = formData.get('variations_json');
-        
-        // Image files
-        const imageFiles = formData.getAll('images[]'); 
-
-        // Basic Validation
-        if (!name) {
-             return NextResponse.json(
-                { error: 'Missing required product field: Name.' },
-                { status: 400 }
-            );
-        }
-        
-        // Conditional validation for simple products
-        if (productType === 'simple' && (!regular_price || !stock_quantity)) {
+        if (!token) {
             return NextResponse.json(
-                { error: 'For Simple products, Regular Price and Stock Quantity are required.' },
-                { status: 400 }
+                { error: 'Authentication required' },
+                { status: 401 }
             );
         }
 
-        // --- 1.1 Process Complex Data Structures ---
-        let categories = [];
-        if (category_ids_json) {
-            const ids = JSON.parse(category_ids_json);
-            // WooCommerce expects category objects { id: X }
-            categories = ids.map(id => ({ id: parseInt(id, 10) }));
-        }
+        // Create cache key based on a hash of the token to ensure uniqueness per user
+        // but avoid using the full token string as a key if it's extremely long.
+        // We use the first 50 chars which is usually enough to include the unique payload part of a JWT.
+        const cacheKey = token.length > 50 ? token.substring(token.length - 50) : token;
+        const now = Date.now();
+        const cached = productsCache.get(cacheKey);
 
-        let brands = [];
-        if (brand_ids_json) {
-            const ids = JSON.parse(brand_ids_json);
-            // WooCommerce expects brand term IDs
-            brands = ids.map(id => parseInt(id, 10));
-        }
+        let allProducts;
 
-        let locations = [];
-        if (location_ids_json) {
-            const ids = JSON.parse(location_ids_json);
-            // WooCommerce expects location term IDs
-            locations = ids.map(id => parseInt(id, 10));
-        }
-
-        let attributes = [];
-        if (attributes_json) {
-            const rawAttributes = JSON.parse(attributes_json);
-            // Transform attributes into WooCommerce format
-            attributes = rawAttributes
-                .filter(attr => attr.name.trim() !== '') // Ensure only named attributes are included
-                .map(attr => ({
-                    name: attr.name,
-                    visible: true,
-                    // CRITICAL: variation must be true for variable products
-                    variation: productType === 'variable' ? true : false, 
-                    // Options must be an array of strings
-                    options: Array.isArray(attr.options) ? attr.options : String(attr.options).split(',').map(s => s.trim()).filter(s => s),
-                }));
-        }
-
-
-        // --- 1.2 Helper functions to clean and convert values ---
-        const cleanValue = (value) => {
-            if (value === null || value === undefined || value === '') {
-                return undefined;
-            }
-            return value;
-        };
-        
-        const toNumber = (value) => {
-            if (!value || value === '') return undefined;
-            const num = parseFloat(value);
-            return isNaN(num) ? undefined : num.toString();
-        };
-
-        // --- 1.3 Construct the Full Product Payload ---
-        const productData = {
-            name,
-            type: productType,
-            status: 'pending', 
+        // Check if cache is valid (bypass if forceRefresh is true)
+        if (!forceRefresh && cached && (now - cached.timestamp < CACHE_DURATION)) {
+            console.log('[PRODUCTS] Serving from cache');
+            allProducts = cached.data;
+        } else {
+            console.log(`[PRODUCTS] ${forceRefresh ? 'Forced refresh' : 'Cache miss'}, fetching fresh data`);
+            allProducts = await fetchAllProducts(token);
             
-            // Descriptions (only include if not empty)
-            ...(cleanValue(short_description) && { short_description: cleanValue(short_description) }),
-            ...(cleanValue(description) && { description: cleanValue(description) }),
+            // Cache the products if we got something (or if we want to cache empty results)
+            productsCache.set(cacheKey, {
+                data: allProducts,
+                timestamp: now
+            });
 
-            // Pricing & Inventory (ONLY included if product is simple)
-            ...(cleanValue(sku) && { sku: cleanValue(sku) }),
-            ...(productType === 'simple' && toNumber(regular_price) && { regular_price: toNumber(regular_price) }),
-            ...(productType === 'simple' && toNumber(sale_price) && { sale_price: toNumber(sale_price) }),
-            
-            // Stock management is ONLY set for simple products
-            ...(productType === 'simple' && stock_quantity && { stock_quantity: parseInt(stock_quantity, 10) }),
-            ...(productType === 'simple' && { manage_stock: true }),
-            
-            // Shared Sale Dates (optional, only if not empty) - format as ISO 8601
-            ...(cleanValue(sale_start) && { date_on_sale_from: cleanValue(sale_start) + 'T00:00:00' }),
-            ...(cleanValue(sale_end) && { date_on_sale_to: cleanValue(sale_end) + 'T23:59:59' }),
-
-            // Shipping (Weight and Dimensions - only include if not empty, must be strings)
-            ...(toNumber(weight) && { weight: toNumber(weight) }),
-            ...((toNumber(length) || toNumber(width) || toNumber(height)) && {
-                dimensions: {
-                    ...(toNumber(length) && { length: toNumber(length) }),
-                    ...(toNumber(width) && { width: toNumber(width) }),
-                    ...(toNumber(height) && { height: toNumber(height) }),
-                }
-            }),
-
-            // Taxonomy & Attributes
-            categories,
-            attributes,
-
-            // Don't include images in initial creation - add them via update
-            // images: [], 
-        };
-
-        // --- 2. Process and Upload Images to WordPress Media Library ---
-        if (imageFiles && imageFiles.length > 0) {
-            try {
-                // Function to upload a single image to WordPress Media Library
-                const uploadSingleFile = async (file) => {
-                    // WordPress REST API media endpoint
-                    const wpMediaUrl = WC_API_URL.replace('/dokan/v1', '/wp/v2') + '/media';
-
-                    // Create FormData for multipart upload (WordPress expects this format)
-                    const mediaFormData = new FormData();
-                    mediaFormData.append('file', file);
-                    mediaFormData.append('title', file.name.split('.')[0]);
-                    mediaFormData.append('caption', '');
-                    mediaFormData.append('alt_text', file.name.split('.')[0]);
-
-                    const uploadRes = await fetch(wpMediaUrl, {
-                        method: 'POST',
-                        headers: {
-                            Authorization: `Bearer ${authToken}`,
-                            // Don't set Content-Type - let fetch set it with boundary for multipart/form-data
-                        },
-                        body: mediaFormData,
-                    });
-
-                    if (!uploadRes.ok) {
-                        const contentType = uploadRes.headers.get('content-type');
-                        let errorMessage = 'Media upload failed.';
-                        
-                        try {
-                            if (contentType && contentType.includes('application/json')) {
-                                const errorJson = await uploadRes.json();
-                                console.error('Media upload error:', errorJson);
-                                errorMessage = errorJson.message || errorMessage;
-                            } else {
-                                const errorText = await uploadRes.text();
-                                console.error('Media upload error (non-JSON):', errorText.substring(0, 500));
-                                errorMessage = `Media upload failed with status ${uploadRes.status}`;
-                            }
-                        } catch (parseError) {
-                            console.error('Error parsing upload response:', parseError);
-                        }
-                        
-                        throw new Error(errorMessage);
-                    }
-                    
-                    const uploadJson = await uploadRes.json();
-                    console.log('Media upload response:', JSON.stringify(uploadJson));
-                    
-                    // Return image object in WooCommerce format
-                    return { 
-                        id: uploadJson.id,
-                        src: uploadJson.source_url || uploadJson.guid?.rendered,
-                        name: uploadJson.title?.rendered || file.name,
-                        alt: uploadJson.alt_text || ''
-                    };
-                };
-
-                // Wait for all uploads to complete successfully
-                const uploadedImages = await Promise.all(
-                    imageFiles.map(uploadSingleFile)
-                );
-
-                console.log('Uploaded images count:', uploadedImages.length);
-                console.log('Uploaded images:', JSON.stringify(uploadedImages));
-
-                // Set images: WooCommerce expects array of image objects with id and src
-                if (uploadedImages.length > 0) {
-                    productData.images = uploadedImages;
-                    console.log('Product images set to productData');
-                } else {
-                    console.warn('No images were uploaded successfully');
-                }
-            } catch (uploadError) {
-                console.error('Image upload failed:', uploadError);
-                // Continue without images - log warning but don't fail the product creation
-                console.warn('Product will be created without images due to upload failure');
-                productData.images = [];
+            // Clean old cache entries (keep last 20 users)
+            if (productsCache.size > 20) {
+                const entries = Array.from(productsCache.entries());
+                entries.sort((a, b) => a[1].timestamp - b[1].timestamp);
+                entries.slice(0, entries.length - 20).forEach(([key]) => productsCache.delete(key));
             }
         }
 
-        // --- 3. Send Product Creation Request to Vendor API (Dokan/WC) with Retry ---
-        console.log('Sending product data to WooCommerce:', JSON.stringify(productData, null, 2));
-        
-        let vendorRes;
-        let vendorJson;
-        let lastError;
-        
-        // Retry logic with exponential backoff
-        const maxRetries = 3;
-        for (let attempt = 0; attempt <= maxRetries; attempt++) {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
-                
-                vendorRes = await fetch(`${WC_API_URL}/products`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${authToken}`,
-                    },
-                    body: JSON.stringify(productData),
-                    signal: controller.signal,
-                });
-                
-                clearTimeout(timeoutId);
-                
-                const contentType = vendorRes.headers.get('content-type');
-                
-                if (contentType && contentType.includes('application/json')) {
-                    vendorJson = await vendorRes.json();
-                    
-                    if (vendorRes.ok) {
-                        break; // Success, exit retry loop
-                    }
-                    
-                    // Don't retry on client errors (4xx) except 408, 429
-                    if (vendorRes.status >= 400 && vendorRes.status < 500 && ![408, 429].includes(vendorRes.status)) {
-                        console.error('Vendor API Client Error:', vendorJson);
-                        return NextResponse.json(
-                            {
-                                error: vendorJson.message || 'Failed to create product on vendor side.',
-                                details: vendorJson,
-                                retryable: false
-                            },
-                            { status: vendorRes.status }
-                        );
-                    }
-                } else {
-                    const errorText = await vendorRes.text();
-                    console.error('Vendor API returned non-JSON response:', errorText.substring(0, 500));
-                    
-                    // Don't retry on HTML responses (likely auth or config issues)
-                    return NextResponse.json(
-                        {
-                            error: `Product creation failed. Server returned HTML instead of JSON. This usually indicates a configuration or authentication issue.`,
-                            details: errorText.substring(0, 200),
-                            retryable: false,
-                            suggestion: 'Check your WooCommerce API URL and authentication settings.'
-                        },
-                        { status: vendorRes.status || 500 }
-                    );
-                }
-                
-                lastError = new Error(vendorJson?.message || `Request failed with status ${vendorRes.status}`);
-                
-            } catch (fetchError) {
-                lastError = fetchError;
-                console.error(`Attempt ${attempt + 1}/${maxRetries + 1} failed:`, fetchError.message);
-                
-                // Don't retry on abort (timeout)
-                if (fetchError.name === 'AbortError') {
-                    return NextResponse.json(
-                        {
-                            error: 'Request timeout. The WooCommerce server took too long to respond.',
-                            retryable: true,
-                            suggestion: 'Please try again. If the problem persists, contact support.'
-                        },
-                        { status: 504 }
-                    );
-                }
-            }
-            
-            // Wait before retry (exponential backoff: 1s, 2s, 4s)
-            if (attempt < maxRetries) {
-                const delay = Math.pow(2, attempt) * 1000;
-                console.log(`Retrying in ${delay}ms...`);
-                await new Promise(resolve => setTimeout(resolve, delay));
-            }
-        }
-        
-        // If we exhausted all retries
-        if (!vendorRes || !vendorRes.ok) {
-            console.error('All retry attempts failed:', lastError);
-            return NextResponse.json(
-                {
-                    error: 'Failed to create product after multiple attempts.',
-                    details: lastError?.message || 'Unknown error',
-                    retryable: true,
-                    suggestion: 'The WooCommerce server may be experiencing issues. Please try again later.'
-                },
-                { status: 503 }
-            );
-        }
+        // Handle pagination on server side
+        const startIndex = (requestedPage - 1) * requestedPerPage;
+        const endIndex = startIndex + requestedPerPage;
+        const paginatedProducts = allProducts.slice(startIndex, endIndex);
 
-        // --- 4. Create Variations for Variable Products ---
-        if (productType === 'variable' && variations_json) {
-            try {
-                const variations = JSON.parse(variations_json);
-                const wcV3Url = WC_API_URL.replace('/dokan/v1', '/wc/v3');
-                
-                console.log(`Creating ${variations.length} variations for product ${vendorJson.id}`);
-                
-                for (const variation of variations) {
-                    const variationData = {
-                        regular_price: variation.regular_price,
-                        sale_price: variation.sale_price || undefined,
-                        stock_quantity: variation.stock_quantity,
-                        manage_stock: true,
-                        sku: variation.sku || undefined,
-                        attributes: variation.attributes.map(attr => ({
-                            name: attr.name,
-                            option: attr.option
-                        }))
-                    };
-                    
-                    const varRes = await fetch(`${wcV3Url}/products/${vendorJson.id}/variations`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${authToken}`,
-                        },
-                        body: JSON.stringify(variationData),
-                    });
-                    
-                    if (!varRes.ok) {
-                        const errorData = await varRes.json().catch(() => ({}));
-                        console.error('Failed to create variation:', errorData);
-                    }
-                }
-                
-                console.log('Variations created successfully');
-            } catch (variationError) {
-                console.error('Error creating variations:', variationError);
-            }
-        }
+        console.log(`[PRODUCTS] Returning ${paginatedProducts.length} products for page ${requestedPage}. Total products in memory: ${allProducts.length}`);
 
-        // --- 5. Update Product with Images and Custom Taxonomies ---
-        try {
-            const productId = vendorJson.id;
-            
-            // Update via WooCommerce v3 API to add images
-            if (productData.images && productData.images.length > 0) {
-                try {
-                    console.log('Updating product with images via WooCommerce v3 API');
-                    const wcV3Url = WC_API_URL.replace('/dokan/v1', '/wc/v3');
-                    
-                    const updateRes = await fetch(`${wcV3Url}/products/${productId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${authToken}`,
-                        },
-                        body: JSON.stringify({
-                            images: productData.images
-                        }),
-                    });
-                    
-                    if (!updateRes.ok) {
-                        const errorData = await updateRes.json().catch(() => ({}));
-                        console.error('Failed to update product with images:', errorData);
-                    } else {
-                        const updateResult = await updateRes.json();
-                        console.log('Product images updated successfully:', updateResult.images?.length || 0, 'images');
-                    }
-                } catch (imageUpdateError) {
-                    console.error('Error updating product images:', imageUpdateError);
-                }
-            }
-            
-            // Update brands via WooCommerce v3 API
-            if (brands && brands.length > 0) {
-                try {
-                    console.log('Updating product with brands via WooCommerce v3 API');
-                    const wcV3Url = WC_API_URL.replace('/dokan/v1', '/wc/v3');
-                    
-                    const updateRes = await fetch(`${wcV3Url}/products/${productId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${authToken}`,
-                        },
-                        body: JSON.stringify({
-                            brands: brands.map(id => ({ id }))
-                        }),
-                    });
-                    
-                    if (!updateRes.ok) {
-                        const errorData = await updateRes.json().catch(() => ({}));
-                        console.error('Failed to update brands:', errorData);
-                    } else {
-                        console.log('Brands updated successfully');
-                    }
-                } catch (updateError) {
-                    console.error('Error updating brands:', updateError);
-                }
-            }
-            
-            // Update locations via WordPress REST API (custom taxonomy)
-            if (locations && locations.length > 0) {
-                try {
-                    console.log('Updating product with locations via WordPress REST API');
-                    const wpApiUrl = WC_API_URL.replace('/dokan/v1', '/wp/v2');
-                    
-                    const updateRes = await fetch(`${wpApiUrl}/product/${productId}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${authToken}`,
-                        },
-                        body: JSON.stringify({
-                            product_location: locations
-                        }),
-                    });
-                    
-                    if (!updateRes.ok) {
-                        const errorData = await updateRes.json().catch(() => ({}));
-                        console.error('Failed to update locations:', errorData);
-                    } else {
-                        console.log('Locations updated successfully');
-                    }
-                } catch (updateError) {
-                    console.error('Error updating locations:', updateError);
-                }
-            }
-        } catch (postUpdateError) {
-            console.error('Error in post-creation updates:', postUpdateError);
-            // Don't fail the whole request - product was created successfully
-        }
+        const responseHeaders = new Headers();
+        responseHeaders.set('X-WP-Total', allProducts.length.toString());
+        responseHeaders.set('X-WP-TotalPages', Math.ceil(allProducts.length / requestedPerPage).toString());
 
-        // --- 6. Success Response ---
-        let responseMessage = 'Product created successfully';
-        const debugInfo = {};
-        
-        if (imageFiles && imageFiles.length > 0) {
-            if (!productData.images || productData.images.length === 0) {
-                responseMessage = 'Product created successfully, but images could not be uploaded. You can add images later by editing the product.';
-            } else {
-                debugInfo.imagesUploaded = productData.images.length;
-                debugInfo.imageIds = productData.images.map(img => img.id);
-            }
-        }
-            
-        return NextResponse.json(
-            {
-                message: responseMessage,
-                product: vendorJson,
-                debug: debugInfo,
-            },
-            { status: 201 }
-        );
+        return NextResponse.json(paginatedProducts, {
+            status: 200,
+            headers: responseHeaders
+        });
+
     } catch (error) {
-        console.error('=== PRODUCT CREATION ERROR ===');
-        console.error('Error message:', error.message);
-        console.error('Error stack:', error.stack);
-        console.error('==============================');
-        
-        return NextResponse.json(
-            { 
-                error: error.message || 'An internal server error occurred.',
-                details: error.stack?.split('\n').slice(0, 3).join('\n')
-            },
-            { status: 500 }
-        );
+        console.error('[PRODUCTS] Error:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}
+
+/**
+ * Handle POST requests to create new products via middleware.
+ */
+export async function POST(request) {
+    try {
+        const formData = await request.formData();
+        const name = formData.get('name');
+
+        if (!name) {
+            return NextResponse.json({ error: 'Product name is required' }, { status: 400 });
+        }
+
+        // --- 1. Construct Product Data ---
+        // We transform the FormData into a JSON object for the middleware
+        // This avoids complex multipart forwarding unless necessary for the enterprise API.
+        const productData = {
+            name: formData.get('name'),
+            type: formData.get('productType') || 'simple',
+            regular_price: formData.get('regular_price'),
+            sale_price: formData.get('sale_price'),
+            stock_quantity: parseInt(formData.get('stock_quantity') || '0', 10),
+            description: formData.get('description'),
+            short_description: formData.get('short_description'),
+            sku: formData.get('sku'),
+            status: 'pending',
+            manage_stock: true
+        };
+
+        // Handle JSON-stringified fields
+        const parseJson = (key) => {
+            const val = formData.get(key);
+            try { return val ? JSON.parse(val) : []; } catch (e) { return []; }
+        };
+
+        productData.categories = parseJson('category_ids_json').map(id => ({ id: parseInt(id, 10) }));
+        productData.brands = parseJson('brand_ids_json').map(id => ({ id: parseInt(id, 10) }));
+        productData.locations = parseJson('location_ids_json').map(id => ({ id: parseInt(id, 10) }));
+        productData.attributes = parseJson('attributes_json');
+        productData.variations = parseJson('variations_json');
+
+        productData.dimensions = {
+            length: formData.get('length') || '',
+            width: formData.get('width') || '',
+            height: formData.get('height') || ''
+        };
+        productData.weight = formData.get('weight') || '';
+
+        // Handle images separately
+        const imageFiles = formData.getAll('images[]');
+        if (imageFiles && imageFiles.length > 0) {
+            console.log(`[PRODUCTS] ${imageFiles.length} images found in request. Processing...`);
+            const uploadResults = [];
+            for (const file of imageFiles) {
+                if (!(file instanceof File)) continue;
+                const mediaForm = new FormData();
+                mediaForm.append('file', file);
+                const mediaRes = await backendFetch('vendor/media', { method: 'POST', body: mediaForm });
+                if (mediaRes.ok) {
+                    const mediaData = await mediaRes.json();
+                    uploadResults.push({ id: mediaData.id, src: mediaData.source_url });
+                }
+            }
+            productData.images = uploadResults;
+        }
+
+        console.log('[PRODUCTS] Sending creation request to middleware...');
+        const res = await backendFetch('vendor/products', {
+            method: 'POST',
+            body: productData
+        });
+
+        if (!res.ok) {
+            const errorData = await res.json().catch(() => ({}));
+            console.error('[PRODUCTS] Creation failed:', errorData);
+            return NextResponse.json(
+                { error: errorData.message || 'Failed to create product via middleware' },
+                { status: res.status }
+            );
+        }
+
+        const newProduct = await res.json();
+        return NextResponse.json({ message: 'Product created successfully', product: newProduct }, { status: 201 });
+
+    } catch (error) {
+        console.error('[PRODUCTS] POST Error:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

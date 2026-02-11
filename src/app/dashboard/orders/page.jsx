@@ -6,8 +6,9 @@ Purpose: Vendor orders list with filtering and pagination
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Loader2, Package, Clock, CheckCircle, XCircle, AlertCircle, Eye } from 'lucide-react';
+import { Package, Clock, CheckCircle, XCircle, AlertCircle, Eye } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import LoadingDots from '@/components/LoadingDots';
 
 const CACHE_KEY = 'orders_cache';
 const CACHE_DURATION = 30000; // 30 seconds
@@ -69,8 +70,6 @@ export default function OrdersPage() {
         setOrders(cached.orders || []);
         setPagination(cached.pagination);
         setLoading(false);
-        // Still fetch fresh data in background
-        loadOrders(currentPage, status, false);
         return;
       }
     }
@@ -156,12 +155,12 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="w-full pb-20 bg-gray-50 min-h-screen">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="p-4 bg-white border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Orders</h2>
-          <p className="text-sm text-gray-500 mt-1">
+          <h2 className="text-xl font-bold text-gray-900">Orders</h2>
+          <p className="text-xs text-gray-500 mt-1">
             Manage your customer orders
           </p>
         </div>
@@ -169,37 +168,37 @@ export default function OrdersPage() {
 
       {/* Quick stats */}
       {pagination && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-white rounded-lg shadow-sm p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-gray-200 border-b border-gray-200">
+          <div className="bg-white p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
+              <div className="p-2 bg-blue-50 rounded-none">
                 <Package className="w-5 h-5 text-blue-600" />
               </div>
               <div>
                 <div className="text-2xl font-bold text-gray-900">{pagination.total}</div>
-                <div className="text-sm text-gray-500">Total Orders</div>
+                <div className="text-xs text-gray-500">Total Orders</div>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-4">
+          <div className="bg-white p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-yellow-100 rounded-lg">
+              <div className="p-2 bg-yellow-50 rounded-none">
                 <Clock className="w-5 h-5 text-yellow-600" />
               </div>
               <div>
                 <div className="text-2xl font-bold text-gray-900">{orders.filter(o => o.status === 'pending').length}</div>
-                <div className="text-sm text-gray-500">Pending (This Page)</div>
+                <div className="text-xs text-gray-500">Pending (This Page)</div>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-4">
+          <div className="bg-white p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
+              <div className="p-2 bg-green-50 rounded-none">
                 <CheckCircle className="w-5 h-5 text-green-600" />
               </div>
               <div>
                 <div className="text-2xl font-bold text-gray-900">{orders.filter(o => o.status === 'completed').length}</div>
-                <div className="text-sm text-gray-500">Completed (This Page)</div>
+                <div className="text-xs text-gray-500">Completed (This Page)</div>
               </div>
             </div>
           </div>
@@ -207,9 +206,9 @@ export default function OrdersPage() {
       )}
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm p-4">
+      <div className="bg-white border-b border-gray-200 p-4 sticky top-[73px] z-10">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-sm font-medium text-gray-700">Filter by status:</span>
+          <span className="text-xs font-medium text-gray-500 uppercase tracking-wider mr-2">Status:</span>
           {['all', 'pending', 'processing', 'on-hold', 'completed', 'cancelled'].map((status) => (
             <button
               key={status}
@@ -217,10 +216,10 @@ export default function OrdersPage() {
                 setStatusFilter(status);
                 setPage(1);
               }}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-none text-xs font-medium transition-colors border ${
                 statusFilter === status
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-indigo-600 text-white border-indigo-600'
+                  : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
               }`}
             >
               {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1).replace('-', ' ')}
@@ -232,14 +231,14 @@ export default function OrdersPage() {
       {/* Loading state */}
       {loading && (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
-          <span className="ml-3 text-gray-600">Loading orders...</span>
+          <LoadingDots size="lg" className="mr-3" />
+          <span className="text-gray-600">Loading orders...</span>
         </div>
       )}
 
       {/* Error state */}
       {error && !loading && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div className="bg-red-50 border-b border-red-200 p-4">
           <div className="flex items-center gap-2 text-red-800">
             <XCircle className="w-5 h-5" />
             <span className="font-medium">Error loading orders</span>
@@ -247,7 +246,7 @@ export default function OrdersPage() {
           <p className="text-sm text-red-600 mt-1">{error}</p>
           <button
             onClick={() => loadOrders(page, statusFilter)}
-            className="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm"
+            className="mt-3 px-4 py-2 bg-red-600 text-white rounded-none hover:bg-red-700 text-sm"
           >
             Try Again
           </button>
@@ -258,7 +257,7 @@ export default function OrdersPage() {
       {!loading && !error && (
         <>
           {orders.length === 0 ? (
-            <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+            <div className="bg-white p-12 text-center border-b border-gray-200">
               <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No orders found</h3>
               <p className="text-sm text-gray-500">
@@ -268,7 +267,7 @@ export default function OrdersPage() {
               </p>
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="bg-white border-b border-gray-200">
               {/* Desktop table */}
               <div className="hidden md:block overflow-x-auto">
                 <table className="w-full">
@@ -296,7 +295,15 @@ export default function OrdersPage() {
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {orders.map((order) => (
-                      <tr key={order.id} className="hover:bg-gray-50">
+                      <tr 
+                        key={order.id} 
+                        className="hover:bg-gray-50 cursor-pointer transition-colors"
+                        onClick={() => router.push(`/dashboard/orders/${order.id}`)}
+                        onMouseEnter={() => {
+                          // Prefetch order details on hover for instant loading
+                          fetch(`/api/vendor/orders/${order.id}`).catch(() => {});
+                        }}
+                      >
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">#{order.id}</div>
                         </td>
@@ -317,11 +324,6 @@ export default function OrdersPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           <button
-                            onClick={() => router.push(`/dashboard/orders/${order.id}`)}
-                            onMouseEnter={() => {
-                              // Prefetch order details on hover for instant loading
-                              fetch(`/api/vendor/orders/${order.id}`).catch(() => {});
-                            }}
                             className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-700"
                           >
                             <Eye className="w-4 h-4" />
@@ -337,7 +339,15 @@ export default function OrdersPage() {
               {/* Mobile cards */}
               <div className="md:hidden divide-y divide-gray-200">
                 {orders.map((order) => (
-                  <div key={order.id} className="p-4 hover:bg-gray-50">
+                  <div 
+                    key={order.id} 
+                    className="p-4 hover:bg-gray-50 cursor-pointer active:bg-gray-100 transition-colors"
+                    onClick={() => router.push(`/dashboard/orders/${order.id}`)}
+                    onMouseEnter={() => {
+                      // Prefetch order details on hover for instant loading
+                      fetch(`/api/vendor/orders/${order.id}`).catch(() => {});
+                    }}
+                  >
                     <div className="flex items-start justify-between mb-2">
                       <div>
                         <div className="text-sm font-medium text-gray-900">Order #{order.id}</div>
@@ -351,11 +361,6 @@ export default function OrdersPage() {
                     <div className="flex items-center justify-between">
                       <div className="text-sm font-medium text-gray-900">{formatCurrency(order.total)}</div>
                       <button
-                        onClick={() => router.push(`/dashboard/orders/${order.id}`)}
-                        onMouseEnter={() => {
-                          // Prefetch order details on hover for instant loading
-                          fetch(`/api/vendor/orders/${order.id}`).catch(() => {});
-                        }}
                         className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-700"
                       >
                         <Eye className="w-4 h-4" />
@@ -370,23 +375,23 @@ export default function OrdersPage() {
 
           {/* Pagination */}
           {pagination && pagination.total_pages > 1 && (
-            <div className="bg-white rounded-lg shadow-sm p-4">
+            <div className="bg-white border-b border-gray-200 p-4">
               <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-700">
-                  Showing page {pagination.page} of {pagination.total_pages} ({pagination.total} total orders)
+                <div className="text-xs text-gray-500">
+                  Page {pagination.page} of {pagination.total_pages}
                 </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setPage(p => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-1.5 border border-gray-300 rounded-none text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Previous
                   </button>
                   <button
                     onClick={() => setPage(p => p + 1)}
                     disabled={!pagination.has_more}
-                    className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-1.5 border border-gray-300 rounded-none text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Next
                   </button>

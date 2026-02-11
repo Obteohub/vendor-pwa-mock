@@ -4,6 +4,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import ImageUpload from "@/components/ImageUpload";
+import { useLocalData } from "@/hooks/useLocalData";
+import LocationSelector from "@/components/LocationSelector";
 
 /**
  * ProductEditForm
@@ -11,10 +13,12 @@ import ImageUpload from "@/components/ImageUpload";
  * Handles new image uploads and updates via FormData.
  */
 export default function ProductEditForm({ productId, initialData }) {
+  const { locations } = useLocalData();
   const [form, setForm] = useState({
     title: initialData.title || "",
     price: initialData.price || "",
     stock: initialData.stock || "",
+    location_ids: initialData.locations?.map(l => typeof l === 'object' ? l.id : l) || [],
   });
 
   const [newFiles, setNewFiles] = useState([]); // Newly uploaded files
@@ -38,6 +42,7 @@ export default function ProductEditForm({ productId, initialData }) {
     formData.append("regular_price", form.price);
     formData.append("stock_quantity", form.stock);
     formData.append("_method", "PUT"); // For API route compatibility
+    formData.append("location_ids_json", JSON.stringify(form.location_ids));
 
     // Add new image files
     newFiles.forEach((file) => formData.append("images[]", file));
@@ -65,18 +70,20 @@ export default function ProductEditForm({ productId, initialData }) {
   }
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <h2 className="text-xl font-semibold mb-6">
-        Edit Product: {initialData.title}
-      </h2>
+    <div className="max-w-full md:max-w-3xl mx-auto">
+      <div className="px-4 md:px-0">
+        <h2 className="text-l font-semibold mb-4">
+          Edit Product: {initialData.title}
+        </h2>
+      </div>
 
       <form
         onSubmit={handleSubmit}
-        className="space-y-4 bg-white p-6 rounded-xl shadow-md"
+        className="space-y-4 bg-white p-6 md:p-8 rounded-none md:rounded-xl shadow-none md:shadow-sm border-y md:border border-gray-200"
       >
         {/* Error message */}
         {error && (
-          <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+          <div className="p-3 rounded-none md:rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
             {error}
           </div>
         )}
@@ -87,7 +94,7 @@ export default function ProductEditForm({ productId, initialData }) {
           <input
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
-            className="mt-1 w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="mt-1 w-full p-2 rounded-none md:rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           />
         </div>
@@ -102,7 +109,7 @@ export default function ProductEditForm({ productId, initialData }) {
               type="number"
               min="0"
               step="0.01"
-              className="mt-1 w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="mt-1 w-full p-2 rounded-none md:rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
           </div>
@@ -113,10 +120,20 @@ export default function ProductEditForm({ productId, initialData }) {
               onChange={(e) => setForm({ ...form, stock: e.target.value })}
               type="number"
               min="0"
-              className="mt-1 w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="mt-1 w-full p-2 rounded-none md:rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
           </div>
+        </div>
+
+        {/* Locations */}
+        <div className="pt-2">
+            <LocationSelector
+              locations={locations}
+              selectedIds={form.location_ids}
+              onChange={(ids) => setForm({ ...form, location_ids: ids })}
+              label="Locations"
+          />
         </div>
 
         {/* Existing Images */}
@@ -131,7 +148,7 @@ export default function ProductEditForm({ productId, initialData }) {
                   key={img.id}
                   src={img.src}
                   alt="Existing Product"
-                  className="w-16 h-16 object-cover rounded-md border"
+                  className="w-16 h-16 object-cover rounded-none md:rounded-md border"
                 />
               ))}
             </div>
@@ -151,14 +168,14 @@ export default function ProductEditForm({ productId, initialData }) {
           <button
             type="button"
             onClick={() => router.push("/dashboard/products")}
-            className="px-4 py-2 rounded-lg border text-sm text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+            className="px-4 py-2 rounded-none md:rounded-lg border text-sm text-slate-600 hover:bg-slate-50 disabled:opacity-50"
             disabled={loading}
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm disabled:bg-blue-400"
+            className="px-4 py-2 rounded-none md:rounded-lg bg-blue-600 text-white text-sm disabled:bg-blue-400"
             disabled={loading}
           >
             {loading ? "Updating..." : "Save Changes"}
@@ -168,4 +185,3 @@ export default function ProductEditForm({ productId, initialData }) {
     </div>
   );
 }
-// File: src/app/dashboard/products/[id]/page.jsx

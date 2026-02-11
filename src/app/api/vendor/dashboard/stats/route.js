@@ -1,121 +1,139 @@
-// src/app/api/vendor/dashboard/stats/route.js
-// Fetch dashboard statistics
 
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { backendFetch } from '@/lib/backend-client';
 
-const WC_API_URL = process.env.NEXT_PUBLIC_WC_API_BASE_URL;
-
+export const dynamic = 'force-dynamic';
 
 export async function GET(request) {
     try {
-        const cookieStore = await cookies();
-        const authToken = cookieStore.get('sw_token')?.value;
+        console.log('[DASHBOARD STATS] Fetching optimized stats (Sequential Batches)...');
 
-        if (!authToken) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const todayIso = today.toISOString();
+
+        // Helper to safe fetch
+        const safeFetch = async (endpoint, options) => {
+            try {
+                return await backendFetch(endpoint, { ...options, cache: 'no-store' });
+            } catch (e) {
+                console.error(`[STATS] Error fetching ${endpoint}:`, e);
+                return { ok: false, headers: new Headers() };
+            }
+        };
+
+        // --- BATCH 1: Sales Stats (Heaviest) ---
+        const salesStatsRes = await safeFetch('vendor/sales-stats', {});
+        
+        // --- BATCH 2: Orders Lists (Medium) ---
+        const [recentOrdersRes, todayOrdersRes] = await Promise.all([
+            safeFetch('vendor/orders', {
+                params: { 
+                    per_page: 5, 
+                    _fields: 'id,status,total,date_created,date_modified,currency' 
+                }
+            }),
+            safeFetch('vendor/orders', {
+                params: { 
+                    after: todayIso, 
+                    per_page: 50, 
+                    _fields: 'id,total,status' 
+                }
+            })
+        ]);
+
+        // --- BATCH 3: Status Counts (Lighter, but grouped to 2 concurrent max) ---
+        const [pendingRes, processingRes] = await Promise.all([
+            safeFetch('vendor/orders', { params: { status: 'pending', per_page: 1, _fields: 'id' } }),
+            safeFetch('vendor/orders', { params: { status: 'processing', per_page: 1, _fields: 'id' } })
+        ]);
+
+        const [completedRes, productsRes] = await Promise.all([
+            safeFetch('vendor/orders', { params: { status: 'completed', per_page: 1, _fields: 'id' } }),
+            safeFetch('vendor/products', { params: { per_page: 1, _fields: 'id' } })
+        ]);
+
+        // --- Process Results ---
+
+        // Helper to get total from header
+        const getHeaderTotal = (res) => {
+            if (!res || !res.headers) return 0;
+            const total = res.headers.get('X-WP-Total') || res.headers.get('x-wp-total');
+            return total ? parseInt(total, 10) : 0;
+        };
+
+        // 1. Sales Stats
+        let statsData = {};
+        if (salesStatsRes.ok) {
+            statsData = await salesStatsRes.json().catch(() => ({}));
         }
 
-        console.log('Fetching dashboard stats...');
-
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 45000);
-
-        try {
-            // Fetch multiple endpoints in parallel for speed
-            const [ordersRes, productsRes] = await Promise.all([
-                fetch(`${WC_API_URL}/orders?per_page=100&_fields=id,status,total,date_created`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${authToken}`,
-                    },
-                    cache: 'no-store',
-                    signal: controller.signal,
-                }),
-                fetch(`${WC_API_URL}/products?per_page=1&_fields=id`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${authToken}`,
-                    },
-                    cache: 'no-store',
-                    signal: controller.signal,
-                })
-            ]);
-
-            clearTimeout(timeoutId);
-
-            const orders = ordersRes.ok ? await ordersRes.json() : [];
-            const totalProducts = parseInt(productsRes.headers.get('X-WP-Total') || '0', 10);
-
-            // Calculate stats
-            const totalOrders = parseInt(ordersRes.headers.get('X-WP-Total') || '0', 10);
-            const pendingOrders = orders.filter(o => o.status === 'pending').length;
-            const processingOrders = orders.filter(o => o.status === 'processing').length;
-            const completedOrders = orders.filter(o => o.status === 'completed').length;
-
-            // Calculate revenue (last 100 orders)
-            const totalRevenue = orders
-                .filter(o => o.status === 'completed')
-                .reduce((sum, o) => sum + parseFloat(o.total || 0), 0);
-
-            // Recent orders (last 5)
-            const recentOrders = orders.slice(0, 5).map(o => ({
+        // 2. Recent Orders
+        let recentOrders = [];
+        if (recentOrdersRes.ok) {
+            const data = await recentOrdersRes.json().catch(() => []);
+            const list = Array.isArray(data) ? data : (data.data || []);
+            // Map to simplified format expected by frontend
+            recentOrders = list.map(o => ({
                 id: o.id,
                 status: o.status,
                 total: o.total,
-                date: o.date_created
+                date: o.date_created || o.date_modified
             }));
-
-            // Calculate today's stats
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const todayOrders = orders.filter(o => new Date(o.date_created) >= today);
-            const todayRevenue = todayOrders
-                .filter(o => o.status === 'completed')
-                .reduce((sum, o) => sum + parseFloat(o.total || 0), 0);
-
-            console.log('✓ Dashboard stats loaded');
-
-            return NextResponse.json({
-                stats: {
-                    totalOrders,
-                    totalProducts,
-                    pendingOrders,
-                    processingOrders,
-                    completedOrders,
-                    totalRevenue,
-                    todayOrders: todayOrders.length,
-                    todayRevenue
-                },
-                recentOrders
-            }, {
-                status: 200,
-                headers: {
-                    'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=240'
-                }
-            });
-
-        } catch (fetchError) {
-            clearTimeout(timeoutId);
-            if (fetchError.name === 'AbortError') {
-                console.error('Dashboard stats timeout');
-                return NextResponse.json(
-                    { error: 'Request timeout' },
-                    { status: 504 }
-                );
-            }
-            throw fetchError;
         }
 
+        // 3. Today's Revenue Calculation
+        let todayRevenue = 0;
+        let todayCount = 0;
+        if (todayOrdersRes.ok) {
+            const todayData = await todayOrdersRes.json().catch(() => []);
+            const list = Array.isArray(todayData) ? todayData : (todayData.data || []);
+            todayCount = list.length;
+            todayRevenue = list.reduce((sum, order) => {
+                // Only count paid/valid orders for revenue
+                if (['completed', 'processing', 'on-hold'].includes(order.status)) {
+                    return sum + parseFloat(order.total || 0);
+                }
+                return sum;
+            }, 0);
+        }
+
+        // 4. Counts from Headers
+        const pendingCount = getHeaderTotal(pendingRes);
+        const processingCount = getHeaderTotal(processingRes);
+        const completedCount = getHeaderTotal(completedRes);
+        const productsCount = getHeaderTotal(productsRes);
+        
+        // Total orders is sum of main statuses or just header total if we did a general query (we didn't)
+        // We can just sum the specific ones we care about for the dashboard "Total Orders" badge if needed, 
+        // or if salesStats returns it.
+        // salesStats usually has total_orders.
+
+        const responseData = {
+            sales: {
+                total_sales: statsData.total_sales || 0,
+                net_sales: statsData.net_sales || 0,
+                average_sales: statsData.average_sales || 0,
+                total_orders: statsData.total_orders || (pendingCount + processingCount + completedCount),
+                total_items: statsData.total_items || 0,
+            },
+            orders: {
+                recent: recentOrders,
+                pending: pendingCount,
+                processing: processingCount,
+                completed: completedCount,
+                today_count: todayCount,
+                today_revenue: todayRevenue
+            },
+            products: {
+                total: productsCount
+            }
+        };
+
+        return NextResponse.json(responseData);
+
     } catch (error) {
-        console.error('Error fetching dashboard stats:', error);
-        return NextResponse.json(
-            { error: error.message || 'Internal error' },
-            { status: 500 }
-        );
+        console.error('[STATS] Fatal error:', error);
+        return NextResponse.json({ error: 'Failed to load stats' }, { status: 500 });
     }
 }
-

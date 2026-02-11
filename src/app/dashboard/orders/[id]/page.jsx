@@ -7,7 +7,8 @@ Purpose: Single order details view
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Loader2, ArrowLeft, Package, User, MapPin, CreditCard, CheckCircle, XCircle, Clock, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Package, User, MapPin, CreditCard, CheckCircle, XCircle, Clock, RefreshCw } from 'lucide-react';
+import LoadingDots from '@/components/LoadingDots';
 
 // Order Status Update Component
 function OrderStatusUpdate({ orderId, currentStatus, onUpdate }) {
@@ -56,20 +57,20 @@ function OrderStatusUpdate({ orderId, currentStatus, onUpdate }) {
     <div className="relative">
       <button
         onClick={() => setShowConfirm(!showConfirm)}
-        className="flex items-center gap-2 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
+        className="flex items-center gap-2 px-3 py-2 bg-indigo-600 text-white rounded-none hover:bg-indigo-700 transition-colors text-sm font-medium"
       >
         <RefreshCw className="w-4 h-4" />
         Update Status
       </button>
 
       {showConfirm && (
-        <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 p-4 z-50">
+        <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-none shadow-xl border border-gray-200 p-4 z-50">
           <h3 className="font-semibold text-gray-900 mb-3">Update Order Status</h3>
           
           <select
             value={newStatus}
             onChange={(e) => setNewStatus(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg mb-3 focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-none mb-3 focus:ring-2 focus:ring-indigo-500"
           >
             {statusOptions.map(option => (
               <option key={option.value} value={option.value}>
@@ -82,11 +83,11 @@ function OrderStatusUpdate({ orderId, currentStatus, onUpdate }) {
             <button
               onClick={handleStatusChange}
               disabled={isUpdating || newStatus === currentStatus}
-              className="flex-1 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+              className="flex-1 px-3 py-2 bg-indigo-600 text-white rounded-none hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
             >
               {isUpdating ? (
                 <span className="flex items-center justify-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <LoadingDots size="sm" />
                   Updating...
                 </span>
               ) : (
@@ -98,7 +99,7 @@ function OrderStatusUpdate({ orderId, currentStatus, onUpdate }) {
                 setShowConfirm(false);
                 setNewStatus(currentStatus);
               }}
-              className="px-3 py-2 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 text-sm font-medium"
+              className="px-3 py-2 bg-gray-200 text-gray-900 rounded-none hover:bg-gray-300 text-sm font-medium"
             >
               Cancel
             </button>
@@ -162,8 +163,6 @@ export default function OrderDetailsPage() {
         if (cached) {
           setOrder(cached);
           setLoading(false);
-          // Still fetch fresh data in background
-          loadOrder(false);
           return;
         }
       }
@@ -179,8 +178,11 @@ export default function OrderDetailsPage() {
           throw new Error(data.error || 'Failed to load order');
         }
 
-        setOrder(data.order);
-        saveToCache(orderId, data.order);
+        // Handle both response formats (direct object or { order: ... })
+        const orderData = data.order || data;
+        
+        setOrder(orderData);
+        saveToCache(orderId, orderData);
         console.log(`✓ Loaded order ${orderId} from API`);
       } catch (err) {
         console.error('Error loading order:', err);
@@ -225,7 +227,7 @@ export default function OrderDetailsPage() {
     const Icon = config.icon;
 
     return (
-      <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium ${config.color}`}>
+      <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-none text-sm font-medium ${config.color}`}>
         <Icon className="w-4 h-4" />
         {config.label}
       </span>
@@ -235,15 +237,15 @@ export default function OrderDetailsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
-        <span className="ml-3 text-gray-600">Loading order...</span>
+        <LoadingDots size="lg" className="mr-3" />
+        <span className="text-gray-600">Loading order...</span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 p-4">
         <button
           onClick={() => router.back()}
           className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900"
@@ -251,7 +253,7 @@ export default function OrderDetailsPage() {
           <ArrowLeft className="w-4 h-4" />
           Back
         </button>
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+        <div className="bg-red-50 border border-red-200 p-6">
           <div className="flex items-center gap-2 text-red-800 mb-2">
             <XCircle className="w-5 h-5" />
             <span className="font-medium">Error loading order</span>
@@ -271,19 +273,19 @@ export default function OrderDetailsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="w-full pb-20 bg-gray-50 min-h-screen">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="p-4 bg-white border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-4">
           <button
             onClick={() => router.back()}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-none transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-gray-600" />
           </button>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Order #{order.id}</h2>
-            <p className="text-sm text-gray-500 mt-1">
+            <h2 className="text-xl font-bold text-gray-900">Order #{order.id}</h2>
+            <p className="text-xs text-gray-500 mt-1">
               Placed on {formatDate(order.date_created)}
             </p>
           </div>
@@ -294,22 +296,24 @@ export default function OrderDetailsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-gray-200 border-b border-gray-200">
         {/* Main content */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-0 bg-white">
           {/* Order items */}
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div className="bg-white">
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">Order Items</h3>
             </div>
             <div className="divide-y divide-gray-200">
-              {order.line_items?.map((item) => (
+              {(order.items || order.line_items)?.map((item) => {
+                const imageSrc = typeof item.image === 'string' ? item.image : item.image?.src;
+                return (
                 <div key={item.id} className="px-6 py-4 flex items-start gap-4">
-                  {item.image?.src && (
+                  {imageSrc && (
                     <img
-                      src={item.image.src}
+                      src={imageSrc}
                       alt={item.name}
-                      className="w-16 h-16 object-cover rounded-lg"
+                      className="w-16 h-16 object-cover rounded-none"
                     />
                   )}
                   <div className="flex-1">
@@ -328,18 +332,19 @@ export default function OrderDetailsPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-medium text-gray-900">{formatCurrency(item.total)}</div>
+                    <div className="font-medium text-gray-900">{formatCurrency(item.total || (item.price * item.quantity))}</div>
                     <div className="text-sm text-gray-500">{formatCurrency(item.price)} each</div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Order totals */}
-            <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 space-y-2">
+            <div className="px-6 py-4 bg-white border-t border-gray-200 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Subtotal</span>
-                <span className="text-gray-900">{formatCurrency(order.total - order.total_tax - order.shipping_total)}</span>
+                <span className="text-gray-900">{formatCurrency((order.total || 0) - (order.total_tax || 0) - (order.shipping_total || 0))}</span>
               </div>
               {parseFloat(order.shipping_total) > 0 && (
                 <div className="flex justify-between text-sm">
@@ -362,9 +367,10 @@ export default function OrderDetailsPage() {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-px bg-gray-200">
           {/* Customer info */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          {order.billing && (
+          <div className="bg-white p-6">
             <div className="flex items-center gap-2 mb-4">
               <User className="w-5 h-5 text-gray-400" />
               <h3 className="font-semibold text-gray-900">Customer</h3>
@@ -381,9 +387,11 @@ export default function OrderDetailsPage() {
               )}
             </div>
           </div>
+          )}
 
           {/* Billing address */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          {order.billing && (
+          <div className="bg-white p-6">
             <div className="flex items-center gap-2 mb-4">
               <MapPin className="w-5 h-5 text-gray-400" />
               <h3 className="font-semibold text-gray-900">Billing Address</h3>
@@ -397,10 +405,11 @@ export default function OrderDetailsPage() {
               {order.billing?.country && <div>{order.billing.country}</div>}
             </div>
           </div>
+          )}
 
           {/* Shipping address */}
           {order.shipping && (
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="bg-white p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Package className="w-5 h-5 text-gray-400" />
                 <h3 className="font-semibold text-gray-900">Shipping Address</h3>
@@ -417,7 +426,7 @@ export default function OrderDetailsPage() {
           )}
 
           {/* Payment info */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="bg-white p-6">
             <div className="flex items-center gap-2 mb-4">
               <CreditCard className="w-5 h-5 text-gray-400" />
               <h3 className="font-semibold text-gray-900">Payment</h3>

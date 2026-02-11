@@ -23,7 +23,7 @@ export default function ImageUpload({ onFilesChange, multiple = false }) {
     };
 
     return (
-        <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
+        <div className="w-full bg-gray-50 border-b border-gray-200 rounded-none p-0">
             <input 
                 type="file" 
                 accept="image/*"
@@ -35,23 +35,25 @@ export default function ImageUpload({ onFilesChange, multiple = false }) {
             
             <label 
                 htmlFor="image-upload"
-                className="block text-center py-2 cursor-pointer text-blue-600 hover:text-blue-800 text-sm font-medium"
+                className="block text-center py-6 cursor-pointer text-blue-600 hover:text-blue-800 text-sm font-medium"
             >
                 {previews.length > 0 ? `Change/Add Images (${previews.length} selected)` : 'Click to Upload Images'}
             </label>
 
             {/* Display image previews */}
-            <div className="mt-3 flex flex-wrap gap-2">
-                {previews.map((url, index) => (
-                    <div key={index} className="w-16 h-16 relative">
-                        <img 
-                            src={url} 
-                            alt={`Preview ${index}`} 
-                            className="w-full h-full object-cover rounded-md border border-gray-200"
-                        />
-                    </div>
-                ))}
-            </div>
+            {previews.length > 0 && (
+                <div className="p-4 pt-0 flex flex-wrap gap-2">
+                    {previews.map((url, index) => (
+                        <div key={index} className="w-16 h-16 relative">
+                            <img 
+                                src={url} 
+                                alt={`Preview ${index}`} 
+                                className="w-full h-full object-cover rounded-none border border-gray-200"
+                            />
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

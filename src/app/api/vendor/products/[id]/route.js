@@ -1,150 +1,182 @@
+// src/app/api/vendor/products/[id]/route.js
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { backendFetch } from '@/lib/backend-client';
 
-// Define the external API base URL for WooCommerce/Dokan
-const WC_API_URL = process.env.NEXT_PUBLIC_WC_API_BASE_URL;
-
-// IMPORTANT: Prevents Next.js from caching the response
 export const dynamic = 'force-dynamic';
 
 export async function GET(request, { params }) {
-    // Get product ID from params
-    const { id } = await params;
-    
-    // Authentication check
-    const cookieStore = await cookies();
-    const authToken = cookieStore.get('sw_token')?.value;
-
-    if (!authToken) {
-        return NextResponse.json(
-            { error: 'Unauthorized. Missing authentication token.' },
-            { status: 401 }
-        );
-    }
-
     try {
-        // Fetch product from WooCommerce/Dokan API
-        const wcV3Url = WC_API_URL.replace('/dokan/v1', '/wc/v3');
-        const res = await fetch(`${wcV3Url}/products/${id}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${authToken}`,
-            },
-            cache: 'no-store',
+        const { id } = await params;
+
+        // Use context=edit to ensure the enterprise middleware returns the full dataset
+        // This is critical for the editing screen to have descriptions, categories, etc.
+        console.log(`[PRODUCTS DEBUG] Fetching product #${id} for EDIT via middleware...`);
+
+        const res = await backendFetch(`vendor/products/${id}`, {
+            params: { context: 'edit' },
+            cache: 'no-store'
         });
+
+        console.log(`[PRODUCTS DEBUG] Middleware Response Status: ${res.status}`);
 
         if (!res.ok) {
             const errorData = await res.json().catch(() => ({}));
-            console.error('WooCommerce API Error:', errorData);
+            console.error(`[PRODUCTS DEBUG] Failed to fetch product #${id}:`, errorData);
             return NextResponse.json(
-                {
-                    error: errorData.message || `Failed to fetch product #${id}`,
-                },
+                { error: errorData.message || `Failed to fetch product #${id}` },
                 { status: res.status }
             );
         }
 
-        const product = await res.json();
+        const fullProduct = await res.json();
 
-        // Return the product data
+        // Prune unwanted fields as requested by user
+        const allowedKeys = [
+            'id', 'name', 'slug', 'status', 'description', 'short_description',
+            'sku', 'price', 'regular_price', 'sale_price', 'manage_stock',
+            'stock_quantity', 'stock_status', 'weight', 'dimensions',
+            'categories', 'brands', 'tags', 'images', 'attributes',
+            'default_attributes', 'variations', 'menu_order'
+        ];
+
+        const product = Object.fromEntries(
+            Object.entries(fullProduct).filter(([key]) => allowedKeys.includes(key))
+        );
+
+        console.log(`[PRODUCTS DEBUG] Successfully retrieved and PRUNED product #${id}. Keys: ${Object.keys(product).join(', ')}`);
+
         return NextResponse.json(product, { status: 200 });
     } catch (error) {
-        console.error('Internal Server Error fetching product:', error);
-        return NextResponse.json(
-            { error: error.message || 'An internal server error occurred.' },
-            { status: 500 }
-        );
+        console.error(`[PRODUCTS DEBUG] GET Detail Error (#${id}):`, error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
 
 export async function PUT(request, { params }) {
-    // Get product ID from params
-    const { id } = await params;
-    
-    // Authentication check
-    const cookieStore = await cookies();
-    const authToken = cookieStore.get('sw_token')?.value;
-
-    if (!authToken) {
-        return NextResponse.json(
-            { error: 'Unauthorized. Missing authentication token.' },
-            { status: 401 }
-        );
-    }
-
     try {
-        // Parse JSON body
-        const body = await request.json();
-        
-        // Build comprehensive update payload
-        const updateData = {
-            name: body.name,
-            type: body.productType || 'simple',
-            regular_price: body.regular_price,
-            sale_price: body.sale_price || '',
-            description: body.description || '',
-            short_description: body.short_description || '',
-            sku: body.sku || '',
-            manage_stock: true,
-            stock_quantity: parseInt(body.stock_quantity, 10) || 0,
-            categories: body.category_ids?.map(id => ({ id })) || [],
-            weight: body.weight || '',
-            dimensions: {
-                length: body.length || '',
-                width: body.width || '',
-                height: body.height || ''
+        const { id } = await params;
+        const contentType = request.headers.get('content-type') || '';
+
+        let productData = {};
+
+        if (contentType.includes('multipart/form-data')) {
+            const formData = await request.formData();
+
+            productData = {
+                name: formData.get('name'),
+                type: formData.get('productType'),
+                regular_price: formData.get('regular_price'),
+                sale_price: formData.get('sale_price'),
+                stock_quantity: formData.get('stock_quantity') ? parseInt(formData.get('stock_quantity'), 10) : undefined,
+                description: formData.get('description'),
+                short_description: formData.get('short_description'),
+                sku: formData.get('sku'),
+                weight: formData.get('weight'),
+                manage_stock: true
+            };
+
+            const parseJson = (key) => {
+                const val = formData.get(key);
+                try { return val ? JSON.parse(val) : []; } catch (e) { return []; }
+            };
+
+            productData.categories = parseJson('category_ids_json').map(catId => ({ id: parseInt(catId, 10) }));
+            productData.brands = parseJson('brand_ids_json').map(brandId => ({ id: parseInt(brandId, 10) }));
+            productData.locations = parseJson('location_ids_json').map(locId => ({ id: parseInt(locId, 10) }));
+            productData.attributes = parseJson('attributes_json');
+            productData.variations = parseJson('variations_json');
+
+            productData.dimensions = {
+                length: formData.get('length') || '',
+                width: formData.get('width') || '',
+                height: formData.get('height') || ''
+            };
+
+            // Handle Images
+            const existingImages = parseJson('existing_images_json');
+            const newImageFiles = formData.getAll('images[]');
+            const uploadResults = [...existingImages];
+
+            if (newImageFiles && newImageFiles.length > 0) {
+                console.log(`[PRODUCTS DEBUG] Uploading ${newImageFiles.length} new images for product #${id}`);
+                for (const file of newImageFiles) {
+                    if (!(file instanceof File)) continue;
+                    const mediaForm = new FormData();
+                    mediaForm.append('file', file);
+                    const mediaRes = await backendFetch('media', { method: 'POST', body: mediaForm });
+                    if (mediaRes.ok) {
+                        const mediaData = await mediaRes.json();
+                        uploadResults.push({ id: mediaData.id, src: mediaData.source_url });
+                    }
+                }
             }
-        };
+            productData.images = uploadResults;
 
-        // Add attributes if present
-        if (body.attributes && body.attributes.length > 0) {
-            updateData.attributes = body.attributes;
+        } else {
+            // Fallback for JSON requests
+            productData = await request.json();
         }
 
-        // Add variations if variable product
-        if (body.productType === 'variable' && body.variations) {
-            updateData.variations = body.variations;
-        }
+        console.log(`[PRODUCTS DEBUG] Updating product #${id} via middleware...`);
 
-        console.log(`Updating product ${id}:`, updateData);
-
-        // Update product via WooCommerce API
-        const wcV3Url = WC_API_URL.replace('/dokan/v1', '/wc/v3');
-        const res = await fetch(`${wcV3Url}/products/${id}`, {
+        const res = await backendFetch(`vendor/products/${id}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${authToken}`,
-            },
-            body: JSON.stringify(updateData),
+            body: productData
         });
 
         if (!res.ok) {
             const errorData = await res.json().catch(() => ({}));
-            console.error('WooCommerce API Error:', errorData);
+            console.error(`[PRODUCTS DEBUG] Middleware update failed for product #${id}:`, errorData);
             return NextResponse.json(
-                {
-                    error: errorData.message || `Failed to update product #${id}`,
-                },
+                { error: errorData.message || `Failed to update product #${id}` },
                 { status: res.status }
             );
         }
 
-        const product = await res.json();
+        const updatedProduct = await res.json();
+        return NextResponse.json({
+            message: 'Product updated successfully',
+            product: updatedProduct
+        }, { status: 200 });
 
-        console.log(`✓ Product ${id} updated successfully`);
-
-        // Return success
-        return NextResponse.json(
-            { message: 'Product updated successfully', product },
-            { status: 200 }
-        );
     } catch (error) {
-        console.error('Internal Server Error updating product:', error);
-        return NextResponse.json(
-            { error: error.message || 'An internal server error occurred.' },
-            { status: 500 }
-        );
+        console.error(`[PRODUCTS DEBUG] PUT Error (#${id}):`, error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}
+
+/**
+ * Handle POST requests as PUT (Method Override for FormData)
+ * Client uses POST with _method="PUT" because FormData cannot be sent via PUT in some environments.
+ */
+export async function POST(request, context) {
+    return PUT(request, context);
+}
+
+export async function DELETE(request, { params }) {
+    try {
+        const { id } = await params;
+        console.log(`[PRODUCTS] Deleting product #${id} via middleware...`);
+
+        const res = await backendFetch(`vendor/products/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (!res.ok) {
+            const errorData = await res.json().catch(() => ({}));
+            return NextResponse.json(
+                { error: errorData.message || `Failed to delete product #${id}` },
+                { status: res.status }
+            );
+        }
+
+        const data = await res.json();
+        return NextResponse.json({
+            message: 'Product deleted successfully',
+            details: data
+        }, { status: 200 });
+    } catch (error) {
+        console.error('[PRODUCTS] DELETE Error:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

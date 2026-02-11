@@ -6,10 +6,11 @@ import Link from 'next/link';
 import { 
   Package, ShoppingCart, DollarSign, Clock, 
   TrendingUp, Plus, Eye, CheckCircle, AlertCircle,
-  Loader2, ArrowRight
+  ArrowRight
 } from 'lucide-react';
 import { useLocalData } from '@/hooks/useLocalData';
-import DataSyncStatus from '@/components/DataSyncStatus';
+import LoadingDots from '@/components/LoadingDots';
+import DashboardLoading from './loading';
 
 export default function DashboardHome() {
   const [stats, setStats] = useState(null);
@@ -33,30 +34,86 @@ export default function DashboardHome() {
   useEffect(() => {
     const loadStats = async () => {
       try {
-        // Try cache first
+        let statsData = null;
+        let recentOrdersData = [];
+        let usedCache = false;
+
+        // 1. Try dashboard stats cache
         const cached = localStorage.getItem('dashboard_stats');
         if (cached) {
           const { data, timestamp } = JSON.parse(cached);
           if (Date.now() - timestamp < 120000) { // 2 min cache
-            setStats(data.stats);
-            setRecentOrders(data.recentOrders);
-            setLoading(false);
+            statsData = data.stats;
+            recentOrdersData = data.recentOrders;
+            usedCache = true;
           }
         }
 
-        const res = await fetch('/api/vendor/dashboard/stats');
-        const data = await res.json();
+        // 2. If no cache, fetch from API
+        if (!usedCache) {
+          const res = await fetch('/api/vendor/dashboard/stats');
+          const data = await res.json();
 
-        if (res.ok) {
-          setStats(data.stats);
-          setRecentOrders(data.recentOrders);
+          if (res.ok) {
+            // Map new API structure to component state
+            statsData = {
+              totalRevenue: data.sales?.total_sales || 0,
+              todayRevenue: data.orders?.today_revenue || 0,
+              todayOrders: data.orders?.today_count || 0,
+              totalOrders: data.sales?.total_orders || 0,
+              completedOrders: data.orders?.completed || 0,
+              totalProducts: data.products?.total || 0,
+              pendingOrders: data.orders?.pending || 0,
+              processingOrders: data.orders?.processing || 0,
+            };
+            recentOrdersData = data.orders?.recent || [];
+          } else {
+            setError(data.error || 'Failed to load stats');
+            setLoading(false);
+            return;
+          }
+        }
+
+        // 3. Override totalProducts from Product List source (Cache or API)
+        // User requested to use product list page count logic
+        let productCount = statsData?.totalProducts || 0;
+        
+        try {
+          // Try product list cache first (same as product list page)
+          const productsCache = localStorage.getItem('products_full_list_v1');
+          if (productsCache) {
+             const { data } = JSON.parse(productsCache);
+             if (Array.isArray(data)) {
+               productCount = data.length;
+             }
+          } else {
+             // If no local cache, fetch count from products API (lightweight check)
+             const pRes = await fetch('/api/vendor/products?per_page=1');
+             if (pRes.ok) {
+                const totalHeader = pRes.headers.get('X-WP-Total');
+                if (totalHeader) {
+                  productCount = parseInt(totalHeader, 10);
+                }
+             }
+          }
+        } catch (e) {
+          console.warn('Failed to resolve product count from list source', e);
+        }
+        
+        // Update stats with correct product count
+        const finalStats = { ...statsData, totalProducts: productCount };
+        
+        setStats(finalStats);
+        setRecentOrders(recentOrdersData);
+
+        // Update dashboard cache with the corrected data if we fetched fresh
+        if (!usedCache) {
           localStorage.setItem('dashboard_stats', JSON.stringify({
-            data,
+            data: { stats: finalStats, recentOrders: recentOrdersData },
             timestamp: Date.now()
           }));
-        } else {
-          setError(data.error || 'Failed to load stats');
         }
+
       } catch (err) {
         console.error('Error loading stats:', err);
         setError(err.message);
@@ -98,132 +155,126 @@ export default function DashboardHome() {
     };
     const c = config[status] || { color: 'bg-gray-100 text-gray-800', label: status };
     return (
-      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${c.color}`}>
+      <span className={`px-2 py-0.5 rounded-none text-xs font-medium ${c.color}`}>
         {c.label}
       </span>
     );
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
-        <span className="ml-3 text-gray-600">Loading dashboard...</span>
-      </div>
-    );
+    return <DashboardLoading />;
   }
 
   return (
-    <div className="space-y-6">
+    <div className="w-full pb-20">
       {/* Welcome */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500 mt-1">Welcome back! Here's what's happening with your store.</p>
+      <div className="p-6 bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-600 shadow-lg text-white mb-6 rounded-2xl mx-4 mt-2">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <p className="text-indigo-100 text-sm mt-1">Welcome back! Here's what's happening with your store.</p>
       </div>
-
-      {/* Data Sync Status */}
-      <DataSyncStatus
-        lastSync={lastSync}
-        syncing={syncing}
-        syncProgress={syncProgress}
-        onSync={() => syncData(true)}
-        categories={categories.length}
-        brands={brands.length}
-        attributes={attributes.length}
-        locations={locations.length}
-      />
 
       {/* Error state */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div className="mx-4 mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded-r">
           <p className="text-red-800">{error}</p>
         </div>
       )}
 
       {/* Key Metrics */}
       {stats && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4 mb-6">
           {/* Total Revenue */}
-          <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
-            <div className="flex items-center justify-between mb-2">
-              <DollarSign className="w-8 h-8 opacity-80" />
-              <TrendingUp className="w-5 h-5 opacity-60" />
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:border-indigo-100 transition-colors">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-green-50 text-green-600 rounded-xl">
+                <DollarSign className="w-6 h-6" />
+              </div>
+              <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <div className="text-3xl font-bold mb-1">{formatCurrency(stats.totalRevenue)}</div>
-            <div className="text-sm opacity-90">Total Revenue</div>
-            <div className="text-xs opacity-75 mt-2">
-              Today: {formatCurrency(stats.todayRevenue)}
+            <div className="text-3xl font-bold text-gray-900 mb-1">{formatCurrency(stats.totalRevenue)}</div>
+            <div className="text-sm text-gray-500">Total Revenue</div>
+            <div className="text-xs text-gray-400 mt-2 font-medium">
+              Today: <span className="text-gray-600">{formatCurrency(stats.todayRevenue)}</span>
             </div>
           </div>
 
           {/* Total Orders */}
-          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
-            <div className="flex items-center justify-between mb-2">
-              <ShoppingCart className="w-8 h-8 opacity-80" />
-              <div className="text-xs opacity-75 bg-white/20 px-2 py-1 rounded">
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:border-indigo-100 transition-colors">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+                <ShoppingCart className="w-6 h-6" />
+              </div>
+              <div className="text-xs text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full font-medium">
                 {stats.todayOrders} today
               </div>
             </div>
-            <div className="text-3xl font-bold mb-1">{stats.totalOrders}</div>
-            <div className="text-sm opacity-90">Total Orders</div>
-            <div className="text-xs opacity-75 mt-2">
+            <div className="text-3xl font-bold text-gray-900 mb-1">{stats.totalOrders}</div>
+            <div className="text-sm text-gray-500">Total Orders</div>
+            <div className="text-xs text-gray-400 mt-2 font-medium">
               {stats.completedOrders} completed
             </div>
           </div>
 
           {/* Total Products */}
-          <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
-            <div className="flex items-center justify-between mb-2">
-              <Package className="w-8 h-8 opacity-80" />
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:border-indigo-100 transition-colors">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
+                <Package className="w-6 h-6" />
+              </div>
               <Link 
                 href="/dashboard/products/add"
-                className="text-xs bg-white/20 hover:bg-white/30 px-2 py-1 rounded transition-colors"
+                className="text-xs bg-purple-50 text-purple-600 hover:bg-purple-100 px-2.5 py-1 rounded-full font-medium transition-colors"
               >
                 + Add
               </Link>
             </div>
-            <div className="text-3xl font-bold mb-1">{stats.totalProducts}</div>
-            <div className="text-sm opacity-90">Total Products</div>
+            <div className="text-3xl font-bold text-gray-900 mb-1">{stats.totalProducts}</div>
+            <div className="text-sm text-gray-500">Total Products</div>
             <Link 
               href="/dashboard/products"
-              className="text-xs opacity-75 mt-2 inline-flex items-center gap-1 hover:opacity-100"
+              className="text-xs text-purple-600 mt-2 inline-flex items-center gap-1 hover:text-purple-700 font-medium"
             >
               View all <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
 
           {/* Pending Orders */}
-          <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-lg p-6 text-white">
-            <div className="flex items-center justify-between mb-2">
-              <Clock className="w-8 h-8 opacity-80" />
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:border-indigo-100 transition-colors">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-orange-50 text-orange-600 rounded-xl">
+                <Clock className="w-6 h-6" />
+              </div>
               {stats.pendingOrders > 0 && (
-                <div className="w-3 h-3 bg-white rounded-full animate-pulse" />
+                <div className="flex items-center gap-1.5 text-xs text-orange-600 bg-orange-50 px-2.5 py-1 rounded-full font-medium">
+                  <span className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse" />
+                  Action needed
+                </div>
               )}
             </div>
-            <div className="text-3xl font-bold mb-1">{stats.pendingOrders}</div>
-            <div className="text-sm opacity-90">Pending Orders</div>
-            <div className="text-xs opacity-75 mt-2">
+            <div className="text-3xl font-bold text-gray-900 mb-1">{stats.pendingOrders}</div>
+            <div className="text-sm text-gray-500">Pending Orders</div>
+            <div className="text-xs text-gray-400 mt-2 font-medium">
               {stats.processingOrders} processing
             </div>
           </div>
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-4">
         {/* Recent Orders */}
-        <div className="lg:col-span-2 bg-white rounded-lg shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Orders</h2>
+        <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-gray-900">Recent Orders</h2>
             <Link 
               href="/dashboard/orders"
-              className="text-sm text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+              className="text-sm text-indigo-600 hover:text-indigo-700 flex items-center gap-1 font-medium"
             >
               View all <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
           <div className="divide-y divide-gray-200">
             {recentOrders.length === 0 ? (
-              <div className="px-6 py-8 text-center text-gray-500">
+              <div className="p-8 text-center text-gray-500">
                 <ShoppingCart className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                 <p>No orders yet</p>
               </div>
@@ -232,10 +283,10 @@ export default function DashboardHome() {
                 <Link
                   key={order.id}
                   href={`/dashboard/orders/${order.id}`}
-                  className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                  className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-indigo-100 rounded-none flex items-center justify-center">
                       <ShoppingCart className="w-5 h-5 text-indigo-600" />
                     </div>
                     <div>
@@ -257,11 +308,11 @@ export default function DashboardHome() {
         </div>
 
         {/* Quick Actions & Tips */}
-        <div className="space-y-6">
+        <div className="space-y-0 border-l border-gray-200 bg-white">
           {/* Important Notice */}
-          <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-lg shadow-sm p-6">
+          <div className="bg-amber-50 border-b border-amber-200 p-4">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 bg-amber-100 rounded-none flex items-center justify-center flex-shrink-0">
                 <AlertCircle className="w-6 h-6 text-amber-600" />
               </div>
               <div>
@@ -280,54 +331,7 @@ export default function DashboardHome() {
             </div>
           </div>
 
-          {/* Quick Actions */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-            <div className="space-y-3">
-              <Link
-                href="/dashboard/products/add"
-                className="flex items-center gap-3 p-3 rounded-lg border-2 border-dashed border-gray-300 hover:border-indigo-500 hover:bg-indigo-50 transition-colors group"
-              >
-                <div className="w-10 h-10 bg-indigo-100 group-hover:bg-indigo-200 rounded-lg flex items-center justify-center">
-                  <Plus className="w-5 h-5 text-indigo-600" />
-                </div>
-                <div>
-                  <div className="font-medium text-gray-900">Add Product</div>
-                  <div className="text-xs text-gray-500">Create new product</div>
-                </div>
-              </Link>
-
-              <Link
-                href="/dashboard/products"
-                className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-colors group"
-              >
-                <div className="w-10 h-10 bg-purple-100 group-hover:bg-purple-200 rounded-lg flex items-center justify-center">
-                  <Package className="w-5 h-5 text-purple-600" />
-                </div>
-                <div>
-                  <div className="font-medium text-gray-900">Manage Products</div>
-                  <div className="text-xs text-gray-500">
-                    {stats?.totalProducts || 0} products
-                  </div>
-                </div>
-              </Link>
-
-              <Link
-                href="/dashboard/orders"
-                className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-green-500 hover:bg-green-50 transition-colors group"
-              >
-                <div className="w-10 h-10 bg-green-100 group-hover:bg-green-200 rounded-lg flex items-center justify-center">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                </div>
-                <div>
-                  <div className="font-medium text-gray-900">View All Orders</div>
-                  <div className="text-xs text-gray-500">
-                    {stats?.totalOrders || 0} total
-                  </div>
-                </div>
-              </Link>
-            </div>
-          </div>
+          {/* Quick Actions removed */}
         </div>
       </div>
     </div>

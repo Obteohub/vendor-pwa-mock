@@ -1,86 +1,108 @@
-import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { NextResponse } from "next/server";
+import { backendFetch } from "@/lib/backend-client";
 
-// Define the external API base URL for WooCommerce/Dokan (MUST be set in .env)
-const WC_API_URL = process.env.NEXT_PUBLIC_WC_API_BASE_URL;
+export const dynamic = 'force-dynamic';
+export const revalidate = 600;
 
+// In-memory cache for attributes
+let attributesCache = null;
+let cacheTimestamp = null;
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
-export async function GET(request) {
-    const cookieStore = await cookies();
-    const authToken = cookieStore.get('sw_token')?.value;
+function extractArray(obj) {
+    if (Array.isArray(obj)) return obj;
+    if (Array.isArray(obj?.attributes)) return obj.attributes;
+    if (Array.isArray(obj?.data?.attributes)) return obj.data.attributes;
+    if (Array.isArray(obj?.data)) return obj.data;
+    return [];
+}
 
-    if (!authToken) {
-        return NextResponse.json(
-            { error: 'Unauthorized. Missing authentication token.' },
-            { status: 401 }
-        );
+async function fetchAllAttributes() {
+    console.log('[ATTRIBUTES] Fetching all attributes from middleware...');
+    
+    let allAttributes = [];
+    let currentPage = 1;
+    let hasMore = true;
+    const maxPages = 50; // Increased limit
+    const PER_PAGE = 100;
+
+    while (hasMore && currentPage <= maxPages) {
+        try {
+            const res = await backendFetch("attributes", {
+                method: "GET",
+                params: { per_page: String(PER_PAGE), page: currentPage.toString() },
+                next: { revalidate: 600 },
+            });
+            
+            if (!res.ok) {
+                console.log(`[ATTRIBUTES] Page ${currentPage} failed with status ${res.status}`);
+                break;
+            }
+            
+            const data = await res.json().catch(() => null);
+            if (!data) {
+                console.log(`[ATTRIBUTES] Page ${currentPage} returned invalid JSON`);
+                break;
+            }
+
+            console.log(`[ATTRIBUTES] Page ${currentPage} raw data keys:`, Object.keys(data));
+            const pageItems = extractArray(data);
+            
+            if (pageItems.length === 0) {
+                console.log(`[ATTRIBUTES] Page ${currentPage} extracted 0 items. Full data:`, JSON.stringify(data).substring(0, 200));
+                hasMore = false;
+                break;
+            }
+
+            allAttributes = [...allAttributes, ...pageItems];
+            console.log(`[ATTRIBUTES] Fetched page ${currentPage}: ${pageItems.length} items`);
+
+            if (pageItems.length < PER_PAGE) {
+                hasMore = false;
+            } else {
+                currentPage++;
+                // Small delay to be gentle
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+        } catch (err) {
+            console.error(`[ATTRIBUTES] Error fetching page ${currentPage}:`, err);
+            break;
+        }
     }
 
-    // Get pagination params from URL
-    const { searchParams } = new URL(request.url);
-    const requestedPage = parseInt(searchParams.get('page') || '1', 10);
-    const perPage = parseInt(searchParams.get('per_page') || '10', 10);
+    console.log('[ATTRIBUTES] Fetched total:', allAttributes.length, 'attributes');
+    return allAttributes;
+}
 
+export async function GET(request) {
     try {
-        // Fetch global attributes with pagination and timeout (increased to 45 seconds)
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 45000);
+        // Check if cache is valid
+        const now = Date.now();
+        const cacheIsValid = attributesCache && cacheTimestamp && (now - cacheTimestamp < CACHE_DURATION);
 
-        // Exclude description, images, and custom fields to reduce payload
-        const apiRes = await fetch(`${WC_API_URL}/products/attributes?per_page=${perPage}&page=${requestedPage}&_fields=id,name,slug`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${authToken}`,
-            },
-            cache: 'no-store',
-            signal: controller.signal,
-        });
-
-        clearTimeout(timeoutId);
-
-        const attributes = await apiRes.json();
-
-        if (!apiRes.ok) {
-            console.error('External API Error (Attributes):', attributes);
-            return NextResponse.json(
-                {
-                    error: attributes.message || 'Failed to fetch product attributes from the store.',
-                },
-                { status: apiRes.status }
-            );
+        if (!cacheIsValid) {
+            console.log('[ATTRIBUTES] Cache miss or expired, fetching fresh data');
+            const freshData = await fetchAllAttributes();
+            
+            // Ensure we cache an empty array if nothing is returned, instead of null
+            attributesCache = freshData && freshData.length > 0 ? freshData : [];
+            cacheTimestamp = now;
+        } else {
+            console.log('[ATTRIBUTES] Serving from cache');
         }
 
-        // Don't fetch terms during initial load - too slow!
-        // Terms will be fetched on-demand when user selects an attribute
-        // Only essential fields, no images or custom fields
-        const attributesWithTerms = attributes.map(attr => ({
-            id: attr.id,
-            name: attr.name,
-            slug: attr.slug,
-            terms: [], // Empty for now - fetch on demand
-            // Explicitly exclude: description, type, order_by, has_archives, image, meta, custom fields, etc.
-        }));
+        return NextResponse.json({
+            attributes: attributesCache || [],
+            total: (attributesCache || []).length
+        }, {
+            status: 200,
+            headers: {
+                "Cache-Control": "public, s-maxage=600, stale-while-revalidate=300",
+            }
+        });
 
-        // Check if there are more pages
-        const totalPages = parseInt(apiRes.headers.get('X-WP-TotalPages') || '1', 10);
-        const hasMore = requestedPage < totalPages;
-
-        return NextResponse.json(
-            { 
-                attributes: attributesWithTerms,
-                page: requestedPage,
-                per_page: perPage,
-                has_more: hasMore
-            },
-            { status: 200 }
-        );
     } catch (error) {
-        console.error('Internal Server Error fetching attributes:', error);
-        return NextResponse.json(
-            // **CHANGE**: Return the specific error message on network failure
-            { error: error.message || 'An internal server error occurred while fetching attributes.' },
-            { status: 500 }
-        );
+        console.error('[ATTRIBUTES ERROR]', error);
+        return NextResponse.json({ attributes: [], total: 0, error: true }, { status: 200 });
     }
 }

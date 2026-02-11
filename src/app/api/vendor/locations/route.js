@@ -1,130 +1,165 @@
-// src/app/api/vendor/locations/route.js
-
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { backendFetch } from '@/lib/backend-client';
 
-// Base WooCommerce/Dokan API URL
-const WC_API_URL = process.env.NEXT_PUBLIC_WC_API_BASE_URL;
+export const dynamic = 'force-dynamic';
+export const revalidate = 600;
 
+// In-memory cache for locations
+let locationsCache = null;
+let cacheTimestamp = null;
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
-export async function GET(request) {
-  try {
-    // Get authentication token from cookies
-    const cookieStore = await cookies();
-    const authToken = cookieStore.get('sw_token')?.value;
+function extractArray(obj) {
+    if (Array.isArray(obj)) return obj;
+    if (!obj || typeof obj !== 'object') return [];
 
-    if (!authToken) {
-      return NextResponse.json(
-        { error: 'Unauthorized. Missing authentication token.' },
-        { status: 401 }
-      );
-    }
+    // Standard paths
+    if (Array.isArray(obj.locations)) return obj.locations;
+    if (Array.isArray(obj.data?.locations)) return obj.data.locations;
+    if (Array.isArray(obj.data)) return obj.data;
+    if (obj.success && Array.isArray(obj.data)) return obj.data;
 
-    // Get pagination params from URL
-    const { searchParams } = new URL(request.url);
-    const requestedPage = parseInt(searchParams.get('page') || '1', 10);
-    const perPage = parseInt(searchParams.get('per_page') || '50', 10);
+    // Aggressive search: Find the first property that is an array
+    const firstArray = Object.values(obj).find(val => Array.isArray(val));
+    if (firstArray) return firstArray;
 
-    // Fetch ONLY the requested page (exclude description, images, and custom fields to reduce payload)
-    const wpApiUrl = WC_API_URL.replace('/dokan/v1', '/wp/v2');
-    const endpoint = `${wpApiUrl}/product_location?per_page=${perPage}&page=${requestedPage}&_fields=id,name,slug,parent,count`;
-
-    // Add timeout - longer for locations as they can be slow
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s timeout
-
-    const res = await fetch(endpoint, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${authToken}`,
-      },
-      cache: 'no-store',
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
-
-    const data = await res.json();
-
-    // Handle non-OK responses
-    if (!res.ok) {
-      console.error('External API Error (Locations):', data);
-      
-      // If 404, return empty array instead of error
-      if (res.status === 404) {
-        console.warn('Product location taxonomy not found. Returning empty array.');
-        return NextResponse.json({ 
-          locations: [],
-          page: requestedPage,
-          per_page: perPage,
-          has_more: false
-        }, { status: 200 });
-      }
-      
-      return NextResponse.json(
-        {
-          error:
-            data.message ||
-            'Failed to fetch product locations. Ensure the product_location taxonomy exists.',
-        },
-        { status: res.status }
-      );
-    }
-
-    // Format and build hierarchical structure (only essential fields, no images or custom fields)
-    const formatted = data.map((loc) => ({
-      id: loc.id,
-      name: loc.name,
-      slug: loc.slug,
-      parent: loc.parent || 0,
-      count: loc.count,
-      // Explicitly exclude: description, image, meta, custom fields, etc.
-    }));
-
-    // Build hierarchical structure
-    const buildHierarchy = (locations, parentId = 0, level = 0) => {
-      const result = [];
-      const children = locations.filter(loc => loc.parent === parentId);
-      
-      children.forEach(loc => {
-        result.push({
-          ...loc,
-          level,
-          displayName: '—'.repeat(level) + (level > 0 ? ' ' : '') + loc.name
-        });
-        // Recursively add children
-        result.push(...buildHierarchy(locations, loc.id, level + 1));
-      });
-      
-      return result;
-    };
-
-    const hierarchical = buildHierarchy(formatted);
-
-    // Check if there are more pages
-    const totalPages = parseInt(res.headers.get('X-WP-TotalPages') || '1', 10);
-    const hasMore = requestedPage < totalPages;
-
-    return NextResponse.json(
-      { 
-        locations: hierarchical,
-        page: requestedPage,
-        per_page: perPage,
-        has_more: hasMore
-      },
-      { status: 200 }
-    );
-  } catch (error) {
-    console.error('--- LOCATION FETCH ERROR ---');
-    console.error(`URL: ${WC_API_URL}/products/product-location`);
-    console.error(`Error: ${error.message}`);
-    console.error('-----------------------------');
-
-    return NextResponse.json(
-      { error: error.message || 'Internal error fetching locations.' },
-      { status: 500 }
-    );
-  }
+    console.warn('[LOCATIONS] Could not find array in response:', typeof obj);
+    return [];
 }
 
+function standardizeLocations(locations) {
+    if (!Array.isArray(locations)) return [];
+
+    const standardized = locations.map(loc => {
+        const id = loc.id || loc.term_id || loc.id_location || loc.ID;
+        const parent = loc.parent || loc.term_parent || loc.location_parent || 0;
+
+        return {
+            id: id ? Number(id) : null,
+            name: loc.name || loc.title || loc.label || 'Unnamed Location',
+            parent: parent ? Number(parent) : 0,
+            slug: loc.slug || '',
+            count: Number(loc.count || 0)
+        };
+    }).filter(loc => loc.id);
+
+    console.log(`[LOCATIONS] Standardized ${standardized.length} items from ${locations.length} raw items`);
+    return standardized;
+}
+
+async function fetchAllLocations() {
+    console.log('[LOCATIONS] Fetching fresh location data...');
+
+    const PER_PAGE = 100;
+    const MAX_PAGES = 10;
+    
+    try {
+        // 1. Fetch Page 1
+        console.log('[LOCATIONS] Fetching page 1...');
+        const p1Res = await backendFetch("locations", {
+            method: "GET",
+            params: { per_page: String(PER_PAGE), page: '1' },
+            next: { revalidate: 600 },
+        });
+
+        if (!p1Res.ok) return [];
+
+        const p1Data = await p1Res.json().catch(() => ({}));
+        const p1Raw = extractArray(p1Data);
+        const p1Locations = standardizeLocations(p1Raw);
+        
+        let allLocations = [...p1Locations];
+
+        // If less than full page, we are done
+        if (p1Raw.length < PER_PAGE) {
+            console.log('[LOCATIONS] Success: Found', allLocations.length, 'locations (Single page)');
+            return allLocations;
+        }
+
+        // 2. Fetch remaining pages in batches (safe concurrency)
+        const remainingPages = Array.from({ length: MAX_PAGES - 1 }, (_, i) => i + 2);
+        const BATCH_SIZE = 3;
+
+        console.log(`[LOCATIONS] Fetching pages ${remainingPages[0]}-${remainingPages[remainingPages.length-1]} in batches of ${BATCH_SIZE}...`);
+
+        for (let i = 0; i < remainingPages.length; i += BATCH_SIZE) {
+            const batch = remainingPages.slice(i, i + BATCH_SIZE);
+            console.log(`[LOCATIONS] Processing batch: ${batch.join(', ')}`);
+
+            const batchResults = await Promise.all(
+                batch.map(async (page) => {
+                    try {
+                        const res = await backendFetch("locations", {
+                            method: "GET",
+                            params: { per_page: String(PER_PAGE), page: String(page) },
+                            next: { revalidate: 600 },
+                        });
+                        
+                        if (!res.ok) return [];
+                        const data = await res.json().catch(() => ({}));
+                        const raw = extractArray(data);
+                        return standardizeLocations(raw);
+                    } catch (err) {
+                        console.error(`[LOCATIONS] Error fetching page ${page}:`, err);
+                        return [];
+                    }
+                })
+            );
+
+            // Flatten batch results
+            batchResults.forEach(locs => {
+                if (locs && locs.length > 0) {
+                    allLocations = [...allLocations, ...locs];
+                }
+            });
+        }
+
+        console.log(`[LOCATIONS] Success: Found ${allLocations.length} locations total`);
+        
+        // Deduplicate by ID just in case
+        const uniqueLocations = Array.from(
+            new Map(allLocations.map(loc => [loc.id, loc])).values()
+        );
+
+        return uniqueLocations;
+    } catch (err) {
+        console.error('[LOCATIONS FETCH ERROR]', err);
+        return [];
+    }
+}
+
+export async function GET(request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const forceRefresh = searchParams.get('refresh') === 'true';
+
+        // Check if cache is valid
+        const now = Date.now();
+        const cacheIsValid = !forceRefresh && locationsCache && locationsCache.length > 0 && cacheTimestamp && (now - cacheTimestamp < CACHE_DURATION);
+
+        if (!cacheIsValid) {
+            console.log('[LOCATIONS] Cache miss, expired, or forced refresh. Fetching fresh data...');
+            const freshData = await fetchAllLocations();
+
+            // Cache data if fetched (even if empty, as long as the fetch didn't fail catastrophically)
+            locationsCache = freshData || [];
+            cacheTimestamp = now;
+        } else {
+            console.log(`[LOCATIONS] Serving ${locationsCache.length} items from cache`);
+        }
+
+        return NextResponse.json({
+            locations: locationsCache,
+            total: locationsCache.length
+        }, {
+            status: 200,
+            headers: {
+                "Cache-Control": "public, s-maxage=600, stale-while-revalidate=300",
+            }
+        });
+
+    } catch (error) {
+        console.error('[LOCATIONS ERROR]', error);
+        return NextResponse.json({ locations: [], total: 0, error: true }, { status: 200 });
+    }
+}

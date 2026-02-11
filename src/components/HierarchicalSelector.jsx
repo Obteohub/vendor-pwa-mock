@@ -12,22 +12,27 @@ import { ChevronRight, ChevronDown } from 'lucide-react';
  * @param {String} label - Label for the selector
  * @param {String} placeholder - Placeholder text
  */
-export default function HierarchicalSelector({ items, selectedIds = [], onChange, label, placeholder = "Select items..." }) {
+function HierarchicalSelector({ items, selectedIds = [], onChange, label, placeholder = "Select items..." }) {
   const [expandedIds, setExpandedIds] = useState(new Set());
   const [isOpen, setIsOpen] = useState(false);
 
   // Build tree structure
   const tree = useMemo(() => {
     const buildTree = (parentId = 0) => {
-      return items
-        .filter(item => item.parent === parentId)
+      // Use loose equality (==) or cast to Number to handle string vs number ID issues
+      const children = items
+        .filter(item => Number(item.parent) == Number(parentId))
         .map(item => ({
           ...item,
           children: buildTree(item.id)
         }));
+      return children;
     };
-    return buildTree();
-  }, [items]);
+
+    const rootItems = buildTree(0);
+    console.log(`[HierarchicalSelector] Built tree for "${label}" with ${rootItems.length} root items from ${items.length} total items`);
+    return rootItems;
+  }, [items, label]);
 
   // Get selected items names for display
   const selectedNames = useMemo(() => {
@@ -61,7 +66,7 @@ export default function HierarchicalSelector({ items, selectedIds = [], onChange
 
     return (
       <div key={item.id}>
-        <div 
+        <div
           className="flex items-center py-2 px-2 hover:bg-gray-50 rounded"
           style={{ paddingLeft: `${level * 20 + 8}px` }}
         >
@@ -138,13 +143,25 @@ export default function HierarchicalSelector({ items, selectedIds = [], onChange
         <>
           {/* Backdrop */}
           <div
-            className="fixed inset-0 z-10"
+            className="fixed inset-0 z-40 bg-black/50"
             onClick={() => setIsOpen(false)}
           />
 
-          {/* Dropdown content */}
-          <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-80 overflow-y-auto">
-            <div className="p-2">
+          {/* Modal Content */}
+          <div className="fixed inset-0 z-[100] bg-white sm:absolute sm:inset-auto sm:top-full sm:left-0 sm:mt-1 sm:w-full sm:rounded-lg sm:shadow-lg sm:h-auto sm:max-h-80 flex flex-col animate-in fade-in zoom-in-95 duration-200 sm:z-50">
+            {/* Header (Mobile only) */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 sm:hidden">
+              <h3 className="text-lg font-semibold text-gray-900">{label || 'Select Options'}</h3>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="p-2 -mr-2 text-gray-500 hover:bg-gray-100 rounded-full"
+              >
+                <ChevronDown className="w-6 h-6 rotate-180" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-2 bg-gray-50 sm:bg-white">
               {tree.length > 0 ? (
                 tree.map(item => renderTreeItem(item))
               ) : (
@@ -153,9 +170,23 @@ export default function HierarchicalSelector({ items, selectedIds = [], onChange
                 </div>
               )}
             </div>
+
+            {/* Footer (Mobile only) */}
+            <div className="p-4 border-t border-gray-200 bg-white sm:hidden pb-safe">
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="w-full py-3 bg-indigo-600 text-white rounded-xl font-semibold shadow-sm"
+              >
+                Done
+              </button>
+            </div>
           </div>
         </>
       )}
     </div>
   );
 }
+
+// Memoize to prevent re-renders
+export default React.memo(HierarchicalSelector);

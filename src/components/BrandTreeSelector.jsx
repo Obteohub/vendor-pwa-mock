@@ -1,37 +1,132 @@
 // src/components/BrandTreeSelector.jsx
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Loader2, X, Tag, ChevronRight, ChevronLeft } from 'lucide-react';
 
-export default function BrandTreeSelector({ 
+function BrandTreeSelector({ 
   selectedIds = [], 
   onChange, 
   label = "Brands",
-  brandTree = [] // Receive brands from parent
+  brandTree = [], // Receive brands from parent
+  loading: parentLoading = false
 }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [currentView, setCurrentView] = useState(null);
   const [navigationStack, setNavigationStack] = useState([]);
+  const [internalBrandTree, setInternalBrandTree] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
+  const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
+
+  // Use provided brandTree or internal one
+  const effectiveBrandTree = useMemo(() => {
+    return brandTree && brandTree.length > 0 ? brandTree : internalBrandTree;
+  }, [brandTree, internalBrandTree]);
+
+  // Fetch brands if not provided and parent is not loading
+  useEffect(() => {
+    // Only fetch if:
+    // 1. No parent data provided
+    // 2. No internal data fetched yet
+    // 3. Not currently fetching
+    // 4. Parent is NOT loading (wait for parent first)
+    // 5. Has not attempted fetch yet (avoid infinite loop if API returns empty)
+    if ((!brandTree || brandTree.length === 0) && internalBrandTree.length === 0 && !isFetching && !parentLoading && !hasAttemptedFetch) {
+      const fetchBrands = async () => {
+        setIsFetching(true);
+        try {
+          // Use the main brands endpoint which returns the full tree from the backend
+          // instead of the mock tree endpoint
+          const response = await fetch('/api/vendor/brands');
+          if (response.ok) {
+            const data = await response.json();
+            if (data.brands && Array.isArray(data.brands)) {
+              // The API returns a flat list, so we need to build the tree structure
+              // to match what the component expects (nested children)
+              const buildTree = (items) => {
+                const itemMap = new Map();
+                const roots = [];
+
+                // First pass: create map of items with empty children
+                items.forEach(item => {
+                  itemMap.set(item.id, { ...item, children: [] });
+                });
+
+                // Second pass: link children to parents
+                items.forEach(item => {
+                  const node = itemMap.get(item.id);
+                  const parentId = Number(item.parent || 0);
+                  if (parentId === 0 || !itemMap.has(parentId)) {
+                    roots.push(node);
+                  } else {
+                    const parent = itemMap.get(parentId);
+                    parent.children.push(node);
+                  }
+                });
+
+                return roots.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+              };
+
+              const tree = buildTree(data.brands);
+              console.log('Fetched and built brand tree:', tree.length, 'root items');
+              setInternalBrandTree(tree);
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching brands:', error);
+        } finally {
+          setIsFetching(false);
+          setHasAttemptedFetch(true);
+        }
+      };
+      fetchBrands();
+    }
+  }, [brandTree, internalBrandTree.length, isFetching, parentLoading, hasAttemptedFetch]);
 
   // Flatten brand tree to simple list and create a map
   const { brands, brandMap } = useMemo(() => {
-    const flattenBrands = (brandList, result = [], map = new Map()) => {
+    const map = new Map();
+    const result = [];
+    const flattenBrands = (brandList, depth = 0) => {
+      if (depth > 10) return; // Prevent infinite recursion
       brandList.forEach(brand => {
         result.push(brand);
         map.set(brand.id, brand);
         if (brand.children && brand.children.length > 0) {
-          flattenBrands(brand.children, result, map);
+          flattenBrands(brand.children, depth + 1);
         }
       });
-      return { result, map };
     };
-    const { result, map } = flattenBrands(brandTree);
+    if (effectiveBrandTree && effectiveBrandTree.length > 0) {
+      flattenBrands(effectiveBrandTree);
+    }
     return { brands: result, brandMap: map };
-  }, [brandTree]);
+  }, [effectiveBrandTree]);
 
-  const loading = brands.length === 0;
+  // Pre-compute which brand IDs have selected descendants for performance and loop protection
+  const selectedParentIds = useMemo(() => {
+    const parentIds = new Set();
+    if (!selectedIds || selectedIds.length === 0) return parentIds;
+
+    const markAncestors = (brandId) => {
+      let current = brandMap.get(brandId);
+      let depth = 0;
+      // Traverse up the tree to mark all parents
+      while (current && current.parent && Number(current.parent) !== 0 && depth < 10) {
+        const parentId = Number(current.parent);
+        if (parentIds.has(parentId)) break; // Already processed this branch
+        parentIds.add(parentId);
+        current = brandMap.get(parentId);
+        depth++;
+      }
+    };
+
+    selectedIds.forEach(id => markAncestors(id));
+    return parentIds;
+  }, [selectedIds, brandMap]);
+
+  const loading = parentLoading || (brands.length === 0 && isFetching);
 
   // Get current brands to display (either root or children of current view)
   const currentBrands = useMemo(() => {
@@ -46,8 +141,8 @@ export default function BrandTreeSelector({
     if (currentView) {
       return currentView.children || [];
     }
-    return brandTree; // Root level brands
-  }, [searchTerm, brands, brandTree, currentView]);
+    return effectiveBrandTree; // Root level brands
+  }, [searchTerm, brands, effectiveBrandTree, currentView]);
 
   // Navigate into a brand's children
   const navigateInto = (brand) => {
@@ -68,10 +163,16 @@ export default function BrandTreeSelector({
 
   // Toggle brand selection
   const toggleBrand = (brandId) => {
-    const newSelected = selectedIds.includes(brandId)
+    const isSelected = selectedIds.includes(brandId);
+    const newSelected = isSelected
       ? selectedIds.filter(id => id !== brandId)
       : [...selectedIds, brandId];
     onChange(newSelected);
+    
+    // Auto-close when a brand is selected (not deselected)
+    if (!isSelected) {
+      setIsOpen(false);
+    }
   };
 
   // Get selected brand names
@@ -241,7 +342,7 @@ export default function BrandTreeSelector({
               )}
             </div>
 
-            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 pb-safe">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm text-gray-600">
                   {selectedIds.length} {selectedIds.length === 1 ? 'brand' : 'brands'} selected
@@ -284,3 +385,5 @@ export default function BrandTreeSelector({
     </>
   );
 }
+
+export default React.memo(BrandTreeSelector);

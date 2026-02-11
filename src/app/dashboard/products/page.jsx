@@ -1,389 +1,370 @@
+/* -------------------------------------------------------------------------
+File: app/dashboard/products/page.jsx
+Purpose: Optimized Product Dashboard with Snappy Performance
+Strategy: Fetch once, cache aggressively, render efficiently
+------------------------------------------------------------------------- */
+
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Truck,
-  Package,
-  Tag,
-  Calendar,
-  Pencil,
-  Loader,
-  AlertTriangle,
+  Plus,
+  Search,
+  RefreshCw,
+  ShoppingBag
 } from "lucide-react";
-import { fetchWithCache } from "@/lib/apiClient";
 
-// ✅ Using your internal API route (server-side fetch with JWT cookie)
-const API_ENDPOINT = "/api/products";
+const API_ENDPOINT = "/api/vendor/products";
+const PRODUCTS_CACHE_KEY = "products_full_list_v1";
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
-// --- REUSABLE EMPTY STATE COMPONENT ---
-const EmptyState = ({
-  icon: Icon,
-  title,
-  message,
-  buttonText,
-  onAction,
-  isLoading = false,
-}) => {
-  return (
-    <div className="flex flex-col items-center justify-center p-10 bg-white rounded-xl shadow-md border border-gray-200 mt-10 w-full max-w-lg mx-auto">
-      {isLoading ? (
-        <Loader className="w-12 h-12 text-indigo-500 animate-spin" />
-      ) : (
-        <Icon className="w-12 h-12 text-gray-400" />
-      )}
-      <h3 className="mt-4 text-xl font-semibold text-gray-900">{title}</h3>
-      <p className="mt-2 text-sm text-gray-500 text-center">{message}</p>
-      {buttonText && onAction && !isLoading && (
-        <div className="mt-6">
-          <button
-            onClick={onAction}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150"
-          >
-            {buttonText}
-          </button>
-        </div>
-      )}
-      {isLoading && <p className="mt-2 text-sm text-indigo-500">Please wait...</p>}
-    </div>
-  );
-};
+// --- MINIMAL STATUS BADGE ---
+const StatusBadge = ({ status }) => {
+  const displayStatus = status || "publish";
+  let styles = "";
+  let label = "Unknown";
 
-// --- INDIVIDUAL PRODUCT CARD ---
-const ProductCard = ({ product, onEdit }) => {
-  const getStatusBadge = (status) => {
-    let color = "";
-    switch (status) {
-      case "publish":
-      case "published":
-        color = "bg-green-100 text-green-800";
-        break;
-      case "pending":
-        color = "bg-yellow-100 text-yellow-800";
-        break;
-      case "draft":
-        color = "bg-gray-100 text-gray-800";
-        break;
-      default:
-        color = "bg-red-100 text-red-800";
-    }
-    return (
-      <span
-        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${color}`}
-      >
-        {status.toUpperCase()}
-      </span>
-    );
-  };
-
-  const price = product.price || product.regular_price || "N/A";
-  const stock =
-    product.stock_quantity !== null ? product.stock_quantity : "N/A";
-  const imageUrl =
-    product.images?.[0]?.src ||
-    "https://placehold.co/60x60/f0f0f0/333333?text=No+Img";
-  const date = product.date_created
-    ? new Date(product.date_created).toLocaleDateString()
-    : "Unknown Date";
-
-  return (
-    <div className="flex items-center bg-white p-3 rounded-lg border border-gray-200">
-      <div className="flex-shrink-0 mr-3">
-        <img
-          className="h-14 w-14 rounded-md object-cover"
-          src={imageUrl}
-          alt={product.name}
-        />
-      </div>
-
-      <div className="flex-grow min-w-0">
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <h2 className="text-base text-gray-900 truncate">
-            {product.name}
-          </h2>
-          <div>
-            {getStatusBadge(product.status)}
-          </div>
-        </div>
-
-        <div className="mt-1 text-xs text-gray-600 space-y-0.5">
-          <p className="flex items-center">
-            <Tag className="w-3 h-3 mr-1.5 text-indigo-500" />
-            <strong className="text-gray-800">Price:</strong>&nbsp;GH₵{price}
-          </p>
-          <p className="flex items-center">
-            <Truck className="w-3 h-3 mr-1.5 text-blue-500" />
-            <strong className="text-gray-800">Stock:</strong>&nbsp;
-            {stock > 0 ? stock : "Out of Stock"}
-          </p>
-          <p className="flex items-center">
-            <Calendar className="w-3 h-3 mr-1.5 text-purple-500" />
-            <strong className="text-gray-800">Created:</strong>&nbsp;{date}
-          </p>
-        </div>
-      </div>
-
-      <div className="flex flex-col space-y-1.5 ml-3 flex-shrink-0">
-        <button
-          className="flex items-center justify-center px-2.5 py-1.5 text-xs bg-indigo-500 hover:bg-indigo-600 text-white rounded-md transition duration-150 shadow-sm"
-          onClick={() => onEdit(product.id)}
-          title="Edit Product"
-        >
-          <Pencil className="w-3 h-3 mr-1" />
-          <span className="hidden sm:inline">Edit</span>
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// --- SKELETON LOADER ---
-const ProductCardSkeleton = () => (
-  <div className="flex items-center bg-white p-3 shadow-sm rounded-lg border border-gray-100 animate-pulse">
-    <div className="flex-shrink-0 mr-3">
-      <div className="h-14 w-14 rounded-md bg-gray-200"></div>
-    </div>
-    <div className="flex-grow min-w-0">
-      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-      <div className="h-3 bg-gray-200 rounded w-1/2 mb-1"></div>
-      <div className="h-3 bg-gray-200 rounded w-1/3"></div>
-    </div>
-    <div className="flex-shrink-0 ml-3">
-      <div className="h-8 w-16 bg-gray-200 rounded"></div>
-    </div>
-  </div>
-);
-
-// --- MAIN PAGE COMPONENT ---
-export default function VendorProductsPage() {
-  const router = useRouter();
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState(null);
-  const [hasMore, setHasMore] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  // Search state - must be declared with other useState hooks
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filteredProducts, setFilteredProducts] = useState([]);
-
-  const fetchProducts = useCallback(async (page = 1, append = false, forceRefresh = false) => {
-    if (!append && !forceRefresh) {
-      setLoading(true);
-      setError(null);
-    } else if (forceRefresh) {
-      setIsRefreshing(true);
-    }
-
-    try {
-      // Use fetchWithCache for instant loading from cache
-      // fetchWithCache automatically returns cached data first if available
-      const cacheKey = `products_page_${page}`;
-      const data = await fetchWithCache(
-        `${API_ENDPOINT}?page=${page}&per_page=20`, // Increased from 10 to 20
-        {
-          method: "GET",
-          credentials: "include",
-        },
-        {
-          cacheKey,
-          maxAge: 2 * 60 * 1000, // 2 minutes cache
-          forceRefresh: forceRefresh,
-          fallbackToCache: true, // Use cache if network fails
-        }
-      );
-
-      if (Array.isArray(data)) {
-        if (append) {
-          setProducts(prev => [...prev, ...data]);
-        } else {
-          setProducts(data);
-        }
-        
-        // Check if there are more products
-        setHasMore(data.length === 20);
-        setCurrentPage(page);
-        
-        // Prefetch next page in background if we have more
-        if (data.length === 20 && page === 1 && !forceRefresh) {
-          // Prefetch page 2 in background
-          setTimeout(() => {
-            fetchProducts(2, false, false).catch(() => {});
-          }, 100);
-        }
-      } else {
-        setError('Invalid response format');
-      }
-    } catch (err) {
-      console.error("Product Fetch Error:", err);
-      
-      // If we have cached products, don't show error
-      if (products.length > 0 && !forceRefresh) {
-        console.warn("Using cached products due to fetch error");
-        return;
-      }
-      
-      if (err.isTimeout || err.name === 'AbortError') {
-        setError('Request timed out. Showing cached data if available.');
-      } else if (err.isOffline) {
-        setError('No internet connection. Showing cached data if available.');
-      } else {
-        setError(err.message || 'Failed to load products');
-      }
-    } finally {
-      setLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [products.length]);
-
-  // Load products on mount
-  useEffect(() => {
-    fetchProducts(1, false, false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Refresh handler
-  const handleRefresh = useCallback(() => {
-    fetchProducts(1, false, true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Filter products based on search - MUST be before any early returns
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredProducts(products);
-      return;
-    }
-
-    const query = searchQuery.toLowerCase();
-    const filtered = products.filter(product => 
-      product.name?.toLowerCase().includes(query) ||
-      product.sku?.toLowerCase().includes(query) ||
-      product.categories?.some(cat => cat.name?.toLowerCase().includes(query))
-    );
-    setFilteredProducts(filtered);
-  }, [searchQuery, products]);
-
-  // Show skeleton loaders only on initial load with no cached data
-  if (loading && products.length === 0) {
-    return (
-      <div className="p-4 max-w-7xl mx-auto">
-        <header className="flex justify-between items-center mb-4 border-b pb-3">
-          <h1 className="text-xl font-bold text-gray-900">Your Products</h1>
-          <button
-            onClick={() => router.push('/dashboard/products/add')}
-            className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 flex items-center text-sm"
-          >
-            <Package className="w-4 h-4 mr-2" /> Add New
-          </button>
-        </header>
-        <div className="space-y-3">
-          {[...Array(5)].map((_, i) => (
-            <ProductCardSkeleton key={i} />
-          ))}
-        </div>
-      </div>
-    );
+  switch (displayStatus.toLowerCase()) {
+    case "publish":
+    case "published":
+      styles = "text-emerald-600";
+      label = "Live";
+      break;
+    case "pending":
+      styles = "text-amber-600 bg-amber-50";
+      label = "Pending";
+      break;
+    case "draft":
+      styles = "text-gray-500 bg-gray-50";
+      label = "Draft";
+      break;
+    default:
+      styles = "text-gray-500 bg-gray-50";
+      label = displayStatus;
   }
 
   return (
-    <div className="p-4 max-w-7xl mx-auto">
-      <header className="mb-4">
-        <div className="flex justify-between items-center mb-3 border-b pb-3">
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold text-gray-900">
-              Your Products ({filteredProducts.length})
-            </h1>
-            {isRefreshing && (
-              <Loader className="w-4 h-4 text-indigo-500 animate-spin" />
-            )}
-          </div>
-          <button
-            onClick={() => router.push('/dashboard/products/add')}
-            className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 flex items-center text-sm"
-          >
-            <Package className="w-4 h-4 mr-2" /> Add New
-          </button>
-        </div>
-        
-        {/* Search Bar */}
-        <div className="mt-3">
-          <input
-            type="text"
-            placeholder="Search products by name, SKU, or category..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          />
-        </div>
-      </header>
+    <span className={`inline-flex items-center px-1.5 py-0.5 rounded-none text-[10px] font-medium leading-none ${styles}`}>
+      {label}
+    </span>
+  );
+};
 
-      {error && products.length === 0 && (
-        <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <div className="flex items-start gap-2">
-            <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="text-sm text-yellow-800">{error}</p>
-              <button
-                onClick={handleRefresh}
-                className="mt-2 text-sm text-yellow-900 underline hover:no-underline"
-              >
-                Try again
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+// --- CLEAN LIST PRODUCT CARD ---
+const ProductCard = ({ product, onEdit }) => {
+  const price = product.price || product.regular_price || "0.00";
+  const stock = product.stock_quantity !== undefined && product.stock_quantity !== null
+    ? product.stock_quantity
+    : "In Stock";
 
-      {error && products.length > 0 && (
-        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-blue-600" />
-            <p className="text-sm text-blue-800">
-              {error} Showing cached data.
+  const imageUrl = product.image || (product.images && product.images.length > 0 ? (product.images[0].src || product.images[0].source_url) : null);
+
+  return (
+    <div
+      onClick={() => onEdit(product.id)}
+      className="group bg-white border-b border-gray-100 last:border-0 py-5 md:py-6 px-4 md:px-6 flex items-center gap-4 md:gap-6 transition-colors hover:bg-gray-50/50 cursor-pointer"
+    >
+  // Enhanced Image - Flattened
+  <div className="w-16 h-16 md:w-20 md:h-20 rounded-none overflow-hidden bg-gray-50 flex-shrink-0 border border-gray-100 transition-shadow">
+    {imageUrl && imageUrl !== "https://placehold.co/80x80/f8fafc/cbd5e1?text=None" ? (
+      <img 
+        src={imageUrl} 
+        alt={product.name} 
+        className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" 
+        onError={(e) => {
+          e.target.src = "https://placehold.co/80x80/f8fafc/cbd5e1?text=No+Img";
+        }}
+      />
+    ) : (
+      <div className="w-full h-full flex items-center justify-center bg-gray-50 text-gray-300">
+        <ShoppingBag className="w-6 h-6" />
+      </div>
+    )}
+  </div>
+
+      {/* Enhanced Info */}
+      <div className="flex-1 min-w-0">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-1.5">
+          <h3 className="text-base md:text-lg font-bold text-gray-900 truncate leading-tight">{product.name}</h3>
+          <StatusBadge status={product.status} />
+        </div>
+
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs md:text-sm text-gray-500">
+          <span className="font-bold text-indigo-600">GH₵{price}</span>
+          <span className="flex items-center gap-1.5 bg-gray-50 px-2 py-0.5 rounded-none border border-gray-100">
+            <ShoppingBag className="w-3.5 h-3.5 text-gray-400" />
+            <span className="font-medium">{stock} in stock</span>
+          </span>
+          {product.sku && <span className="hidden lg:inline text-gray-400 font-mono tracking-tighter">SKU: {product.sku}</span>}
+        </div>
+      </div>
+
+      {/* Sophisticated Action - Flattened */}
+      <div className="hidden sm:block">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit(product.id);
+          }}
+          className="px-5 py-2.5 text-xs font-black uppercase tracking-widest text-indigo-600 border-2 border-indigo-50 rounded-none hover:border-indigo-600 hover:bg-white transition-all active:scale-95"
+        >
+          Modify
+        </button>
+      </div>
+      <div className="sm:hidden">
+        <div className="w-8 h-8 rounded-none flex items-center justify-center text-white bg-emerald-600 transition-transform active:scale-90">
+          <Plus className="w-5 h-5" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- SKELETON ---
+const ListSkeleton = () => (
+  <div className="py-4 px-4 flex items-center gap-4 animate-pulse border-b border-gray-50">
+    <div className="w-12 h-12 rounded-none bg-gray-50" />
+    <div className="flex-1 space-y-2">
+      <div className="h-3 bg-gray-50 rounded w-1/4" />
+      <div className="h-2 bg-gray-50 rounded w-1/6" />
+    </div>
+    <div className="w-12 h-6 bg-gray-50 rounded" />
+  </div>
+);
+
+export default function VendorProductsPage() {
+  const router = useRouter();
+  const [allProducts, setAllProducts] = useState([]);
+  const [displayedProducts, setDisplayedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [displayCount, setDisplayCount] = useState(20);
+  const isFetchingRef = useRef(false);
+
+  // Load from localStorage cache immediately
+  const loadFromCache = useCallback(() => {
+    try {
+      const cached = localStorage.getItem(PRODUCTS_CACHE_KEY);
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < CACHE_DURATION) {
+          setAllProducts(data);
+          setDisplayedProducts(data.slice(0, 20));
+          return true;
+        }
+      }
+    } catch (err) {
+      console.warn('Cache load failed:', err);
+    }
+    return false;
+  }, []);
+
+  // Fetch all products at once
+  const fetchAllProducts = useCallback(async (forceRefresh = false) => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
+
+    if (forceRefresh) setIsRefreshing(true);
+    else if (allProducts.length === 0) setLoading(true);
+
+    setError(null);
+
+    try {
+      let allData = [];
+      let page = 1;
+      let hasMore = true;
+
+      // Fetch all pages
+      while (hasMore) {
+        const response = await fetch(
+          `${API_ENDPOINT}?page=${page}&per_page=100${forceRefresh ? '&refresh=true' : ''}`,
+          { method: "GET", credentials: "include" }
+        );
+
+        if (!response.ok) throw new Error('Failed to fetch products');
+
+        const data = await response.json();
+        if (Array.isArray(data) && data.length > 0) {
+          allData = [...allData, ...data];
+          hasMore = data.length === 100;
+          page++;
+        } else {
+          hasMore = false;
+        }
+
+        // Safety limit
+        if (page > 50) break;
+      }
+
+      // Cache the results
+      try {
+        localStorage.setItem(PRODUCTS_CACHE_KEY, JSON.stringify({
+          data: allData,
+          timestamp: Date.now()
+        }));
+      } catch (err) {
+        console.warn('Cache save failed:', err);
+      }
+
+      setAllProducts(allData);
+      setDisplayedProducts(allData.slice(0, displayCount));
+
+    } catch (err) {
+      console.error('Fetch error:', err);
+      if (allProducts.length === 0) setError(err.message);
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+      isFetchingRef.current = false;
+    }
+  }, [allProducts.length, displayCount]);
+
+  // Initial load: try cache first, then fetch
+  useEffect(() => {
+    const hasCache = loadFromCache();
+    // Even if we have cache, if it's empty, let's fetch fresh data
+    if (!hasCache || allProducts.length === 0) {
+      console.log('[DEBUG] Initial load: No cache or empty products, fetching...');
+      fetchAllProducts(false);
+    } else {
+      console.log('[DEBUG] Initial load: Serving from local cache', allProducts.length, 'items');
+    }
+  }, []);
+
+  // Filter and paginate products
+  const filteredProducts = useMemo(() => {
+    if (!searchQuery.trim()) return displayedProducts;
+    const q = searchQuery.toLowerCase();
+    return allProducts.filter(p =>
+      p.name?.toLowerCase().includes(q) ||
+      p.sku?.toLowerCase().includes(q)
+    ).slice(0, displayCount);
+  }, [searchQuery, allProducts, displayedProducts, displayCount]);
+
+  // Load more handler
+  const loadMore = useCallback(() => {
+    const newCount = displayCount + 20;
+    setDisplayCount(newCount);
+    if (!searchQuery.trim()) {
+      setDisplayedProducts(allProducts.slice(0, newCount));
+    }
+  }, [displayCount, allProducts, searchQuery]);
+
+  const hasMore = useMemo(() => {
+    if (searchQuery.trim()) {
+      const totalFiltered = allProducts.filter(p =>
+        p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.sku?.toLowerCase().includes(searchQuery.toLowerCase())
+      ).length;
+      return filteredProducts.length < totalFiltered;
+    }
+    return displayedProducts.length < allProducts.length;
+  }, [searchQuery, allProducts, displayedProducts, filteredProducts]);
+
+  return (
+    <div className="min-h-screen bg-white font-sans w-full pb-20">
+      <div className="w-full">
+
+        {/* Minimal Header */}
+        <div className="flex items-end justify-between pb-4 p-4 border-b border-gray-200 bg-white sticky top-0 z-10">
+          <div>
+            <h1 className="text-xl font-bold text-gray-900 tracking-tight">Your Products</h1>
+            <p className="text-xs text-gray-400 mt-1">
+              {allProducts.length} items catalogued
+              {searchQuery && ` · ${filteredProducts.length} matches`}
             </p>
           </div>
-        </div>
-      )}
-
-      {filteredProducts.length === 0 && !loading ? (
-        <EmptyState
-          icon={Package}
-          title={searchQuery ? "No Products Found" : "No Products Yet"}
-          message={searchQuery ? `No products match "${searchQuery}"` : "You haven't added any products yet."}
-          buttonText={searchQuery ? undefined : "Add New Product"}
-          onAction={searchQuery ? undefined : () => router.push('/dashboard/products/add')}
-        />
-      ) : (
-        <>
-          <div className="space-y-3">
-            {filteredProducts.map((product) => (
-              <ProductCard 
-                key={product.id} 
-                product={product} 
-                onEdit={(id) => router.push(`/dashboard/products/edit/${id}`)}
-              />
-            ))}
-            {loading && filteredProducts.length > 0 && (
-              <>
-                <ProductCardSkeleton />
-                <ProductCardSkeleton />
-              </>
-            )}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => fetchAllProducts(true)}
+              disabled={isRefreshing}
+              className="text-gray-400 hover:text-indigo-600 transition-colors disabled:opacity-50"
+            >
+              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            </button>
+            <button
+              onClick={() => router.push('/dashboard/products/add')}
+              className="flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-700"
+            >
+              <Plus className="w-4 h-4" />
+              New Product
+            </button>
           </div>
-          
-          {hasMore && !loading && (
-            <div className="mt-4 text-center">
+        </div>
+
+        {/* Minimal Search */}
+        <div className="relative px-4 py-4 border-b border-gray-100">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 ml-4" />
+          <input
+            type="text"
+            placeholder="Search catalog..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 py-2 bg-gray-50 outline-none text-sm text-gray-900 placeholder:text-gray-400 rounded-none border border-gray-200 focus:border-indigo-200 transition-all font-normal"
+          />
+        </div>
+
+        {/* List */}
+        <div className="bg-white">
+          {error && allProducts.length === 0 ? (
+            <div className="py-20 text-center px-4">
+              <div className="mb-4 text-rose-500 font-bold">Error Loading Products</div>
+              <p className="text-xs text-gray-500 mb-6 max-w-xs mx-auto">{error}</p>
+              <button 
+                onClick={() => fetchAllProducts(true)}
+                className="px-6 py-2 bg-indigo-600 text-white text-xs font-bold uppercase tracking-widest"
+              >
+                Try Again
+              </button>
+            </div>
+          ) : loading && allProducts.length === 0 ? (
+            <div className="divide-y divide-gray-50">
+              {[...Array(5)].map((_, i) => (
+                <ListSkeleton key={i} />
+              ))}
+            </div>
+          ) : allProducts.length === 0 ? (
+            <div className="py-32 text-center px-4">
+              <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <ShoppingBag className="w-8 h-8 text-gray-200" />
+              </div>
+              <h3 className="text-sm font-bold text-gray-900 mb-1">No products found</h3>
+              <p className="text-xs text-gray-500 mb-6">You haven't added any products to your catalog yet.</p>
+              <button 
+                onClick={() => router.push('/dashboard/products/add')}
+                className="px-6 py-2 bg-indigo-600 text-white text-xs font-bold uppercase tracking-widest"
+              >
+                Add First Product
+              </button>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-50">
+              {filteredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onEdit={(id) => router.push(`/dashboard/products/edit/${id}`)}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Load More */}
+          {hasMore && !loading && !searchQuery && (
+            <div className="p-8 text-center">
               <button
-                onClick={() => fetchProducts(currentPage + 1, true, false)}
-                className="px-4 py-2 text-sm text-indigo-600 hover:text-indigo-700 border border-indigo-300 rounded-lg hover:bg-indigo-50 transition duration-150"
+                onClick={loadMore}
+                className="px-8 py-3 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-indigo-600 transition-colors"
               >
                 Load More
               </button>
             </div>
           )}
-        </>
-      )}
+        </div>
+      </div>
     </div>
   );
 }

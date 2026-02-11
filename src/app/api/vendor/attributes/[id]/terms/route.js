@@ -1,116 +1,139 @@
-// src/app/api/vendor/attributes/[id]/terms/route.js
-// Fetch terms for a specific attribute on-demand
+import { NextResponse } from "next/server";
+import { backendFetch } from "@/lib/backend-client";
 
-import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+// Remove edge runtime - it's causing issues with dynamic imports
+// export const runtime = "edge";
+export const revalidate = 600;
 
-const WC_API_URL = process.env.NEXT_PUBLIC_WC_API_BASE_URL;
-
+/**
+ * GET /api/attributes/:id/terms
+ * Optimized for Vendor selection (e.g., choosing specific colors or sizes)
+ * - Super fast search: fetch 1–2 pages only
+ * - Full list: batch parallel + early stop
+ * - Edge cached
+ */
 export async function GET(request, { params }) {
     try {
-        const cookieStore = await cookies();
-        const authToken = cookieStore.get('sw_token')?.value;
-
-        if (!authToken) {
-            return NextResponse.json(
-                { error: 'Unauthorized. Missing authentication token.' },
-                { status: 401 }
-            );
+        const { id } = await params;
+        if (!id) {
+            return NextResponse.json({ terms: [], total: 0 }, { status: 400 });
         }
 
-        // Await params in Next.js 15+
-        const { id } = await params;
-        const attributeId = id;
-        console.log(`Fetching terms for attribute ${attributeId}`);
+        const { searchParams } = new URL(request.url);
+        const searchQuery = (searchParams.get("search") ?? searchParams.get("q") ?? "").trim();
 
-        // Use WooCommerce Store API endpoint for attribute terms
-        const baseUrl = WC_API_URL.replace('/dokan/v1', '');
-        const termsEndpoint = `${baseUrl}/wc/store/v1/products/attributes/${attributeId}/terms`;
-        
-        console.log(`Using endpoint: ${termsEndpoint}`);
+        // Prepare query params (remove keys we control)
+        const queryParams = Object.fromEntries(searchParams.entries());
+        delete queryParams.page;
+        delete queryParams.per_page;
+        delete queryParams.search;
+        delete queryParams.q;
 
-        // Fetch ALL terms with pagination
-        let allTerms = [];
-        let page = 1;
-        let hasMore = true;
+        const PER_PAGE = 100;
+        const MAX_PAGES = 50; // Increased from 10
+        const SEARCH_PAGES = 2; // still super fast, but better results than page 1 only
 
-        while (hasMore && page <= 10) { // Max 10 pages = 1000 terms
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 45000);
+        const extractArray = (data) => {
+            if (Array.isArray(data)) return data;
+            if (Array.isArray(data?.terms)) return data.terms;
+            if (Array.isArray(data?.data)) return data.data;
+            if (Array.isArray(data?.data?.terms)) return data.data.terms;
+            return [];
+        };
 
+        const fetchPage = async (page) => {
             try {
-                const termsRes = await fetch(
-                    `${termsEndpoint}?per_page=100&page=${page}`,
-                    {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${authToken}`,
-                        },
-                        cache: 'no-store',
-                        signal: controller.signal,
-                    }
-                );
+                const res = await backendFetch(`attributes/${id}/terms`, {
+                    method: "GET",
+                    params: {
+                        ...queryParams,
+                        per_page: String(PER_PAGE),
+                        page: String(page),
+                        ...(searchQuery ? { search: searchQuery } : {}),
+                    },
+                    next: { revalidate: 600 },
+                });
 
-                clearTimeout(timeoutId);
+                if (!res.ok) {
+                    console.log(`[TERMS] Page ${page} failed: ${res.status}`);
+                    return [];
+                }
+                const data = await res.json().catch(() => ({}));
+                return extractArray(data);
+            } catch (err) {
+                console.error(`[TERMS] Error fetching page ${page}:`, err);
+                return [];
+            }
+        };
 
-                if (!termsRes.ok) {
-                    const errorText = await termsRes.text();
-                    console.error(`Terms fetch failed for attribute ${attributeId}, page ${page}:`, {
-                        status: termsRes.status,
-                        statusText: termsRes.statusText,
-                        error: errorText
-                    });
+        let allTerms = [];
+
+        if (searchQuery) {
+            // ✅ SUPER FAST SEARCH (1–2 pages max)
+            const first = await fetchPage(1);
+            if (first.length === 0) {
+                allTerms = [];
+            } else if (first.length < PER_PAGE) {
+                allTerms = first;
+            } else {
+                const second = await fetchPage(2);
+                allTerms = [...first, ...second];
+            }
+        } else {
+            // ✅ FULL LIST (sequential + safe)
+            let currentPage = 1;
+            let hasMore = true;
+
+            while (hasMore && currentPage <= MAX_PAGES) {
+                const pageItems = await fetchPage(currentPage);
+                
+                if (pageItems.length === 0) {
+                    hasMore = false;
                     break;
                 }
 
-                const terms = await termsRes.json();
-                console.log(`Raw terms response for attribute ${attributeId}:`, terms);
-                
-                if (Array.isArray(terms) && terms.length > 0) {
-                    allTerms = [...allTerms, ...terms];
-                    console.log(`Loaded ${terms.length} terms for attribute ${attributeId}, page ${page}`);
-                }
+                allTerms.push(...pageItems);
+                console.log(`[TERMS] Fetched page ${currentPage}: ${pageItems.length} items`);
 
-                // Check if there are more pages
-                const totalPages = parseInt(termsRes.headers.get('X-WP-TotalPages') || '1', 10);
-                hasMore = page < totalPages && terms.length === 100;
-                page++;
-
-            } catch (fetchError) {
-                clearTimeout(timeoutId);
-                if (fetchError.name === 'AbortError') {
-                    console.error(`Timeout fetching terms page ${page} for attribute ${attributeId}`);
+                if (pageItems.length < PER_PAGE) {
+                    hasMore = false;
+                } else {
+                    currentPage++;
+                    // Small delay to be gentle
+                    await new Promise(resolve => setTimeout(resolve, 50));
                 }
-                break;
             }
         }
 
-        console.log(`Total terms loaded for attribute ${attributeId}: ${allTerms.length}`);
+        // Deduplicate + sort for UX
+        const uniqueTerms = Array.from(
+            new Map(
+                allTerms
+                    .filter((t) => t && t.id != null)
+                    .map((t) => [String(t.id), t])
+            ).values()
+        ).sort((a, b) => {
+            const an = String(a?.name ?? a?.label ?? "");
+            const bn = String(b?.name ?? b?.label ?? "");
+            return an.localeCompare(bn, undefined, { sensitivity: "base", numeric: true });
+        });
 
-        return NextResponse.json({
-            terms: allTerms.map(term => ({
-                id: term.id,
-                name: term.name,
-                slug: term.slug
-            })),
-            total: allTerms.length
-        }, { status: 200 });
-
-    } catch (error) {
-        if (error.name === 'AbortError') {
-            const { id } = await params;
-            console.error(`Timeout fetching terms for attribute ${id}`);
-            return NextResponse.json(
-                { error: 'Request timeout', terms: [] },
-                { status: 504 }
-            );
-        }
-
-        console.error('Error fetching attribute terms:', error);
         return NextResponse.json(
-            { error: error.message || 'Internal error', terms: [] },
-            { status: 500 }
+            {
+                terms: uniqueTerms,
+                total: uniqueTerms.length,
+                stats: { attributeId: id, mode: searchQuery ? "search" : "batch" },
+            },
+            {
+                headers: {
+                    "Cache-Control": "public, s-maxage=600, stale-while-revalidate=300",
+                    "X-Attribute-Id": String(id),
+                    "X-Terms-Query": searchQuery || "ALL",
+                },
+            }
         );
+    } catch (error) {
+        console.error("[ATTRIBUTE TERMS ERROR]", error?.message || error);
+        return NextResponse.json({ terms: [], total: 0, error: true }, { status: 502 });
     }
 }
